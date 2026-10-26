@@ -1,0 +1,54 @@
+// Prisma schema - منصة الأكواد التعليمية
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// جدول الطلاب - الاسم ورقم الجوال + باسورد، رقم الجوال فريد لمنع التكرار
+model Student {
+  id        String    @id @default(cuid())
+  name      String
+  phone     String    @unique
+  password  String    // هاش الباسورد (scrypt)
+  createdAt DateTime  @default(now()) @map("created_at")
+  lastLogin DateTime? @map("last_login")
+  views     View[]
+
+  @@map("students")
+}
+
+// جدول المطلوب (اختبارات/واجبات/مشاريع) الذي ينشره الأدمن
+model Assignment {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  type        String    @default("واجب") // اختبار / واجب / مشروع / تقرير / أخرى
+  details     String?   // تفاصيل إضافية (اختياري)
+  subject     String?
+  dueDate     DateTime? @map("due_date")
+  published   Boolean   @default(true)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  views       View[]
+
+  @@map("assignments")
+}
+
+// جدول متابعة مشاهدة الطالب لكل كود (للإحصائيات)
+model View {
+  id           String     @id @default(cuid())
+  studentId    String @map("student_id")
+  assignmentId String @map("assignment_id")
+  viewedAt     DateTime   @default(now()) @map("viewed_at")
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, assignmentId])
+  @@map("views")
+}
