@@ -12,6 +12,7 @@ export async function GET() {
       id: student.id,
       name: student.name,
       phone: student.phone,
+      universityId: student.universityId,
     },
   })
 }

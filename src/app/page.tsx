@@ -23,7 +23,7 @@ import { useToast } from '@/hooks/use-toast'
 import { Toaster } from '@/components/ui/toaster'
 
 // ===== الأنواع =====
-type Student = { id: string; name: string; phone: string }
+type Student = { id: string; name: string; phone: string; universityId: string | null }
 type Assignment = {
   id: string
   title: string
@@ -215,6 +215,7 @@ function RegisterForm({
   const [step, setStep] = useState<1 | 2>(1)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [universityId, setUniversityId] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [showPass, setShowPass] = useState(false)
@@ -241,6 +242,10 @@ function RegisterForm({
         title: 'رقم الجوال غير صحيح',
         description: 'مثال: 05XXXXXXXX (10 أرقام تبدأ بـ 05)',
       })
+      return
+    }
+    if (!/^\d{6,15}$/.test(universityId.trim().replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 0x06f0)))) {
+      toast({ variant: 'destructive', title: 'الرقم الجامعي غير صحيح', description: 'أدخل رقماً من 6 إلى 15 رقماً' })
       return
     }
     // فحص فوري: هل الرقم مسجّل مسبقاً؟
@@ -284,7 +289,7 @@ function RegisterForm({
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, password }),
+        body: JSON.stringify({ name, phone, universityId, password }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -362,6 +367,19 @@ function RegisterForm({
               className="text-right"
               autoComplete="tel"
             />
+            <FloatingInput
+              label="الرقم الجامعي"
+              icon={GraduationCap}
+              type="text"
+              inputMode="numeric"
+              placeholder="أدخل رقمك الجامعي"
+              value={universityId}
+              onChange={(e) => setUniversityId(e.target.value)}
+              required
+              dir="ltr"
+              autoComplete="off"
+            />
+            <p className="text-xs text-muted-foreground">خاص بحسابك والإدارة، ولا يظهر للطلاب الآخرين. إدخاله لا يعني توثيق القيد الجامعي.</p>
             <Button type="submit" disabled={checking} className="w-full h-12 text-base gap-1.5">
               {checking ? (
                 'جاري التحقق...'
@@ -396,6 +414,9 @@ function RegisterForm({
               </p>
               <p className="text-muted-foreground" dir="ltr">
                 الجوال: <span className="font-medium text-foreground">{phone}</span>
+              </p>
+              <p className="text-muted-foreground" dir="ltr">
+                الرقم الجامعي: <span className="font-medium text-foreground">{universityId}</span>
               </p>
             </div>
 
@@ -835,10 +856,65 @@ function WeeklyTasks({ assignments }: { assignments: Assignment[] }) {
   )
 }
 
+// ===== استكمال الملف للطلاب المسجلين سابقاً =====
+function CompleteUniversityId({ student, onCompleted, onLogout }: {
+  student: Student; onCompleted: (s: Student) => void; onLogout: () => void
+}) {
+  const [universityId, setUniversityId] = useState('')
+  const [saving, setSaving] = useState(false)
+  const { toast } = useToast()
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    try {
+      const res = await fetch('/api/me/university-id', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ universityId }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        toast({ title: 'تعذّر الحفظ', description: data.error || 'تأكد من الرقم', variant: 'destructive' })
+        return
+      }
+      toast({ title: 'تم حفظ رقمك الجامعي', description: 'تقدر الآن تستخدم المنصة كالمعتاد' })
+      onCompleted(data.student)
+    } catch {
+      toast({ title: 'خطأ في الاتصال', variant: 'destructive' })
+    } finally { setSaving(false) }
+  }
+  return (
+    <div className="min-h-screen bg-pattern">
+      <StudentHeader student={student} onLogout={onLogout} />
+      <main className="container mx-auto max-w-xl px-4 py-10">
+        <Card className="overflow-hidden shadow-xl border-primary/20">
+          <CardHeader className="space-y-3 text-center bg-primary/5">
+            <div className="size-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+              <GraduationCap className="size-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl">كمّل ملفك الجامعي</CardTitle>
+            <CardDescription className="text-base">هلا {student.name}، باقي خطوة واحدة لحسابك القديم.</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <form onSubmit={submit} className="space-y-4">
+              <FloatingInput label="رقمك الجامعي" icon={GraduationCap} type="text" inputMode="numeric"
+                placeholder="الرقم الجامعي" value={universityId} onChange={e => setUniversityId(e.target.value)}
+                required autoFocus dir="ltr" autoComplete="off" />
+              <p className="text-sm text-muted-foreground">الرقم خاص بك وبإدارة الموقع. لن يظهر لزملائك، ولا يُعد وحده إثبات قيد في الجامعة.</p>
+              <Button type="submit" className="w-full h-12" disabled={saving}>
+                {saving ? 'جاري الحفظ...' : 'حفظ الرقم والدخول للمنصة'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  )
+}
+
 // ===== لوحة الطالب =====
 function StudentDashboard({
-  student, onLogout,
-}: { student: Student; onLogout: () => void }) {
+  student, onLogout, onStudentUpdated,
+}: { student: Student; onLogout: () => void; onStudentUpdated: (s: Student) => void }) {
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [viewedIds, setViewedIds] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
@@ -860,7 +936,8 @@ function StudentDashboard({
     }
   }, [toast])
 
-  useEffect(() => { load() }, [load])
+  // لا نحمل محتوى الحساب القديم حتى يكتمل الرقم الجامعي. بعد الحفظ يُحمّل تلقائياً.
+  useEffect(() => { if (student.universityId) load() }, [load, student.universityId])
 
   const recordView = async (assignmentId: string) => {
     try {
@@ -888,6 +965,10 @@ function StudentDashboard({
 
   const newCount = assignments.length - viewedIds.filter(id => assignments.some(a => a.id === id)).length
 
+  if (!student.universityId) {
+    return <CompleteUniversityId student={student} onCompleted={onStudentUpdated} onLogout={handleLogout} />
+  }
+
   return (
     <div className="min-h-screen bg-pattern">
       <StudentHeader student={student} onLogout={handleLogout} />
@@ -904,7 +985,7 @@ function StudentDashboard({
         </motion.section>
         {showProfile ? (
           <motion.section initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} className="grid gap-4 md:grid-cols-2">
-            <Card className="p-6 space-y-5"><div className="flex items-center gap-3"><div className="size-14 rounded-2xl profile-avatar flex items-center justify-center text-2xl font-bold">{student.name.trim().charAt(0)}</div><div><h3 className="font-bold text-xl">{student.name}</h3><p className="text-sm text-muted-foreground">الملف الشخصي للطالب</p></div></div><div className="border-t pt-4 space-y-4"><div className="flex items-center gap-3"><User className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">الاسم الكامل</p><p className="font-semibold">{student.name}</p></div></div><div className="flex items-center gap-3"><Phone className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">رقم الجوال</p><p dir="ltr" className="font-semibold text-right">{student.phone}</p></div></div></div><p className="text-xs text-muted-foreground">بيانات هذا الملف خاصة بحسابك ولا تظهر للطلاب الآخرين.</p></Card>
+            <Card className="p-6 space-y-5"><div className="flex items-center gap-3"><div className="size-14 rounded-2xl profile-avatar flex items-center justify-center text-2xl font-bold">{student.name.trim().charAt(0)}</div><div><h3 className="font-bold text-xl">{student.name}</h3><p className="text-sm text-muted-foreground">الملف الشخصي للطالب</p></div></div><div className="border-t pt-4 space-y-4"><div className="flex items-center gap-3"><User className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">الاسم الكامل</p><p className="font-semibold">{student.name}</p></div></div><div className="flex items-center gap-3"><Phone className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">رقم الجوال</p><p dir="ltr" className="font-semibold text-right">{student.phone}</p></div></div><div className="flex items-center gap-3"><GraduationCap className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">الرقم الجامعي</p><p dir="ltr" className="font-semibold text-right">{student.universityId}</p></div></div></div><p className="text-xs text-muted-foreground">بيانات هذا الملف خاصة بحسابك وإدارة الموقع ولا تظهر للطلاب الآخرين. إدخال الرقم لا يعني أن الجامعة وثقت الحساب.</p></Card>
             <Card className="p-6"><h3 className="text-xl font-bold mb-5">إنجازك الدراسي</h3><div className="grid grid-cols-2 gap-3"><div className="profile-metric"><p className="text-3xl font-bold text-primary">{assignments.length}</p><p className="text-sm text-muted-foreground">إجمالي المطلوب</p></div><div className="profile-metric"><p className="text-3xl font-bold text-primary">{viewedIds.length}</p><p className="text-sm text-muted-foreground">تمت مشاهدتها</p></div></div><div className="mt-6"><div className="flex justify-between text-sm mb-2"><span>نسبة الاطلاع</span><span>{assignments.length ? Math.round(viewedIds.length / assignments.length * 100) : 0}%</span></div><div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary transition-all" style={{width:`${assignments.length ? Math.min(100,Math.round(viewedIds.length / assignments.length * 100)) : 0}%`}} /></div><p className="text-xs text-muted-foreground mt-3">الاطلاع لا يعني تسليم الواجب؛ هذه النسبة تحسب العناصر التي فتحتها فقط.</p></div></Card>
           </motion.section>
         ) : (<>
@@ -1481,6 +1562,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                         <th className="p-3 font-medium">#</th>
                         <th className="p-3 font-medium">الاسم</th>
                         <th className="p-3 font-medium">رقم الجوال</th>
+                        <th className="p-3 font-medium">الرقم الجامعي</th>
                         <th className="p-3 font-medium">المشاهدات</th>
                         <th className="p-3 font-medium">تاريخ التسجيل</th>
                         <th className="p-3 font-medium">آخر دخول</th>
@@ -1492,6 +1574,9 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                           <td className="p-3 text-muted-foreground">{i + 1}</td>
                           <td className="p-3 font-medium">{s.name}</td>
                           <td className="p-3" dir="ltr">{s.phone}</td>
+                          <td className="p-3">{s.universityId
+                            ? <span dir="ltr" className="font-mono">{s.universityId}</span>
+                            : <Badge variant="outline">لم يُكمل بياناته</Badge>}</td>
                           <td className="p-3">
                             <Badge variant="secondary">{s._count?.views || 0}</Badge>
                           </td>
@@ -1630,7 +1715,7 @@ export default function HomePage() {
   }
 
   if (student) {
-    return <StudentDashboard student={student} onLogout={() => { setStudent(null); window.location.reload() }} />
+    return <StudentDashboard student={student} onStudentUpdated={setStudent} onLogout={() => { setStudent(null); window.location.reload() }} />
   }
 
   return <AuthScreen onAuthed={(s) => { setStudent(s); window.location.reload() }} />

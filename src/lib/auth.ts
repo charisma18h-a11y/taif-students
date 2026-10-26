@@ -135,3 +135,13 @@ export function validateSaudiPhone(phone: string): { valid: boolean; normalized:
   const valid = /^05\d{8}$/.test(normalized)
   return { valid, normalized }
 }
+
+
+// الرقم الجامعي حقل شخصي؛ لا يعني إدخاله أن الجامعة أكدت هوية صاحب الحساب.
+export function validateUniversityId(input: unknown): { valid: boolean; normalized: string } {
+  const raw = typeof input === 'string' ? input.trim() : ''
+  const normalized = raw
+    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 0x06f0))
+  return { valid: /^\d{6,15}$/.test(normalized), normalized }
+}

@@ -11,6 +11,9 @@ export async function GET() {
       status: 401, headers: { 'Cache-Control': 'private, no-store' },
     })
   }
+  if (!student.universityId) {
+    return NextResponse.json({ error: 'أكمل الرقم الجامعي في ملفك أولاً' }, { status: 403 })
+  }
   return NextResponse.json({ questions: physicsQuestions }, {
     headers: { 'Cache-Control': 'private, no-store' },
   })

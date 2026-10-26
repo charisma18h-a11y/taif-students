@@ -7,6 +7,13 @@ export async function GET() {
   try {
     const student = await getStudentSession()
 
+    if (!student) {
+      return NextResponse.json({ error: 'سجّل الدخول أولاً' }, { status: 401 })
+    }
+    if (!student.universityId) {
+      return NextResponse.json({ error: 'أكمل الرقم الجامعي في ملفك أولاً' }, { status: 403 })
+    }
+
     const assignments = await db.assignment.findMany({
       where: { published: true },
       orderBy: { createdAt: 'desc' },
@@ -25,7 +32,7 @@ export async function GET() {
     return NextResponse.json({
       assignments,
       viewedIds,
-      student: student ? { id: student.id, name: student.name, phone: student.phone } : null,
+      student: { id: student.id, name: student.name },
     })
   } catch (e) {
     console.error('assignments GET error', e)

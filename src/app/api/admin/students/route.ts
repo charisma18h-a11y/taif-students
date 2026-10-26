@@ -10,7 +10,9 @@ export async function GET() {
 
   const students = await db.student.findMany({
     orderBy: { createdAt: 'desc' },
-    include: {
+    select: {
+      id: true, name: true, phone: true, universityId: true,
+      createdAt: true, lastLogin: true,
       _count: { select: { views: true } },
     },
   })
