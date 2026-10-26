@@ -10,6 +10,7 @@ import {
   Sparkles, GraduationCap, UserPlus, LogIn, UserCircle2, ArrowRight
 } from 'lucide-react'
 import Image from 'next/image'
+import ExamQuestions from '@/components/exam-questions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -189,6 +190,8 @@ function AuthScreen({ onAuthed }: { onAuthed: (s: Student) => void }) {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            <div className="mt-5"><ExamQuestions /></div>
 
             {/* زر الأدمن يظهر فقط في الشاشة الرئيسية */}
             {mode !== 'home' && (
@@ -907,6 +910,7 @@ function StudentDashboard({
             <Card className="p-6"><h3 className="text-xl font-bold mb-5">إنجازك الدراسي</h3><div className="grid grid-cols-2 gap-3"><div className="profile-metric"><p className="text-3xl font-bold text-primary">{assignments.length}</p><p className="text-sm text-muted-foreground">إجمالي المطلوب</p></div><div className="profile-metric"><p className="text-3xl font-bold text-primary">{viewedIds.length}</p><p className="text-sm text-muted-foreground">تمت مشاهدتها</p></div></div><div className="mt-6"><div className="flex justify-between text-sm mb-2"><span>نسبة الاطلاع</span><span>{assignments.length ? Math.round(viewedIds.length / assignments.length * 100) : 0}%</span></div><div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary transition-all" style={{width:`${assignments.length ? Math.min(100,Math.round(viewedIds.length / assignments.length * 100)) : 0}%`}} /></div><p className="text-xs text-muted-foreground mt-3">الاطلاع لا يعني تسليم الواجب؛ هذه النسبة تحسب العناصر التي فتحتها فقط.</p></div></Card>
           </motion.section>
         ) : (<>
+        <ExamQuestions />
         <WeeklyTasks assignments={assignments} />
         {/* بطاقات إحصائية */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
