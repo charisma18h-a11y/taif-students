@@ -783,6 +783,57 @@ function AssignmentCard({
   )
 }
 
+
+// جدول أسبوعي موحد: يُنشأ تلقائياً من مواعيد العناصر التي ينشرها الأدمن.
+function WeeklyTasks({ assignments }: { assignments: Assignment[] }) {
+  const [weekOffset, setWeekOffset] = useState(0)
+  const [selectedDay, setSelectedDay] = useState<number | null>(null)
+  const start = new Date()
+  start.setHours(12, 0, 0, 0)
+  start.setDate(start.getDate() - start.getDay() + weekOffset * 7)
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(start)
+    date.setDate(start.getDate() + i)
+    return date
+  })
+  const key = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+  const byDay = (date: Date) => assignments.filter(a => a.dueDate && key(new Date(a.dueDate)) === key(date))
+  const active = selectedDay === null ? new Date().getDay() : selectedDay
+  const activeDate = days[active]
+  const tasks = byDay(activeDate)
+  return (
+    <section className="rounded-3xl border border-amber-500/30 bg-[#111c2e] text-white p-4 sm:p-6 space-y-5" dir="rtl">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div><p className="text-amber-300 text-xs font-semibold mb-1">وش علينا؟ • لجميع الطلاب</p><h2 className="font-bold text-xl flex items-center gap-2"><Calendar className="size-5 text-amber-300"/>جدول المهام الأسبوعي</h2></div>
+        <div className="flex gap-2 items-center">
+          <Button variant="outline" size="sm" className="border-amber-500/40 bg-transparent text-amber-200 hover:bg-amber-500/20 hover:text-white" onClick={() => {setWeekOffset(v => v - 1);setSelectedDay(null)}}>الأسبوع السابق</Button>
+          <Button variant="outline" size="sm" className="border-amber-500/40 bg-transparent text-amber-200 hover:bg-amber-500/20 hover:text-white" onClick={() => {setWeekOffset(0);setSelectedDay(null)}}>اليوم</Button>
+          <Button variant="outline" size="sm" className="border-amber-500/40 bg-transparent text-amber-200 hover:bg-amber-500/20 hover:text-white" onClick={() => {setWeekOffset(v => v + 1);setSelectedDay(null)}}>الأسبوع التالي</Button>
+        </div>
+      </div>
+      <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+        {days.map((d, i) => {const count = byDay(d).length; const chosen = i === active; return (
+          <button key={key(d)} type="button" onClick={() => setSelectedDay(i)} aria-pressed={chosen} className={`min-w-0 rounded-xl border p-1.5 sm:p-3 text-center transition-colors ${chosen ? 'bg-amber-300 text-slate-950 border-amber-300' : 'bg-slate-800/70 text-slate-200 border-slate-700 hover:border-amber-400'}`}>
+            <span className="block text-[10px] sm:text-sm font-semibold">{['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][i]}</span>
+            <span className="block text-base sm:text-xl font-bold">{d.getDate()}</span>
+            <span className="block text-[10px] sm:text-xs">{count ? `${count} مهمة` : '—'}</span>
+          </button>
+        )})}
+      </div>
+      <div className="rounded-2xl bg-slate-800/70 p-4 space-y-3">
+        <h3 className="font-semibold text-amber-200">مهام {['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][active]} • {activeDate.toLocaleDateString('ar-SA', { day:'numeric', month:'long' })}</h3>
+        {tasks.length === 0 ? <p className="text-slate-300 text-sm">لا توجد مهام محددة لهذا اليوم. تظهر المهام هنا تلقائياً عندما يضيف الأدمن موعد تسليم أو اختبار.</p> : tasks.map(a => (
+          <div key={a.id} className="rounded-xl border border-slate-600 bg-slate-900/80 p-3 flex flex-wrap items-center gap-3 justify-between">
+            <div><p className="font-semibold">{a.title}</p><p className="text-xs text-slate-300 mt-1">{a.subject || 'بدون مادة'} • {a.type}</p></div>
+            <span className="text-xs rounded-full bg-amber-300/15 text-amber-200 px-3 py-1">{a.dueDate ? new Date(a.dueDate).toLocaleTimeString('ar-SA', {hour:'2-digit',minute:'2-digit'}) : ''}</span>
+          </div>
+        ))}
+      </div>
+      <p className="text-xs text-slate-400">الجدول موحّد، وتتحكم الإدارة بمحتواه من قسم المطلوب. العناصر التي ليس لها موعد لا تظهر في التقويم.</p>
+    </section>
+  )
+}
+
 // ===== لوحة الطالب =====
 function StudentDashboard({
   student, onLogout,
@@ -856,6 +907,7 @@ function StudentDashboard({
             <Card className="p-6"><h3 className="text-xl font-bold mb-5">إنجازك الدراسي</h3><div className="grid grid-cols-2 gap-3"><div className="profile-metric"><p className="text-3xl font-bold text-primary">{assignments.length}</p><p className="text-sm text-muted-foreground">إجمالي المطلوب</p></div><div className="profile-metric"><p className="text-3xl font-bold text-primary">{viewedIds.length}</p><p className="text-sm text-muted-foreground">تمت مشاهدتها</p></div></div><div className="mt-6"><div className="flex justify-between text-sm mb-2"><span>نسبة الاطلاع</span><span>{assignments.length ? Math.round(viewedIds.length / assignments.length * 100) : 0}%</span></div><div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary transition-all" style={{width:`${assignments.length ? Math.min(100,Math.round(viewedIds.length / assignments.length * 100)) : 0}%`}} /></div><p className="text-xs text-muted-foreground mt-3">الاطلاع لا يعني تسليم الواجب؛ هذه النسبة تحسب العناصر التي فتحتها فقط.</p></div></Card>
           </motion.section>
         ) : (<>
+        <WeeklyTasks assignments={assignments} />
         {/* بطاقات إحصائية */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <Card className="p-4">
