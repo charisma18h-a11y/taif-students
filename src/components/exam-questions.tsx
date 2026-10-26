@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
+import { matchesQuestionSearch } from '@/lib/question-search'
 
 type Question = { number: number; question: string; answer: string }
 
@@ -8,6 +9,9 @@ export default function ExamQuestions({ expanded = false }: { expanded?: boolean
   const [questions, setQuestions] = useState<Question[]>([])
   const [status, setStatus] = useState<'loading' | 'ready' | 'error' | 'unauthorized'>('loading')
   const [attempt, setAttempt] = useState(0)
+  const [search, setSearch] = useState('')
+  const searchId = useId()
+  const filteredQuestions = questions.filter(q => matchesQuestionSearch(q.question, search))
 
   useEffect(() => {
     const controller = new AbortController()
@@ -41,7 +45,27 @@ export default function ExamQuestions({ expanded = false }: { expanded?: boolean
         {status === 'loading' && <p role="status" className="text-slate-300">جارٍ تحميل الأسئلة…</p>}
         {status === 'unauthorized' && <p role="alert">انتهت الجلسة. <a href="/" className="text-amber-300 underline">سجّل الدخول مجدداً</a></p>}
         {status === 'error' && <div role="alert"><p>تعذّر تحميل الأسئلة.</p><button type="button" onClick={() => setAttempt(n => n + 1)} className="mt-3 rounded-lg border border-amber-300 px-4 py-2 text-amber-300">إعادة المحاولة</button></div>}
-        {status === 'ready' && questions.map(q => (
+        {status === 'ready' && (
+          <div className="space-y-3">
+            <label htmlFor={searchId} className="block font-semibold text-amber-300">البحث في التسريبات</label>
+            <div className="flex gap-2">
+              <input
+                id={searchId}
+                type="search"
+                value={search}
+                onChange={event => setSearch(event.target.value)}
+                placeholder="اكتب أول كلمة أو أي جزء من السؤال…"
+                className="min-w-0 flex-1 rounded-xl border border-white/20 bg-[#192740] px-4 py-3 text-white placeholder:text-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-300"
+              />
+              {search && <button type="button" onClick={() => setSearch('')} className="shrink-0 rounded-xl border border-amber-300/40 px-4 py-2 text-amber-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-300">مسح البحث</button>}
+            </div>
+            <p role="status" aria-live="polite" className="text-sm text-slate-300">
+              عرض {filteredQuestions.length} من {questions.length} سؤال
+            </p>
+            {filteredQuestions.length === 0 && <p className="rounded-xl border border-white/10 p-5 text-slate-300">لا توجد أسئلة مطابقة. جرّب كلمة أخرى أو امسح البحث.</p>}
+          </div>
+        )}
+        {status === 'ready' && filteredQuestions.map(q => (
           <article key={q.number} className="rounded-xl bg-[#192740] border border-white/10 p-4 sm:p-5">
             <p className="text-sm text-amber-300 mb-2">السؤال {q.number}</p>
             <h2 className="font-semibold text-base sm:text-lg leading-8">{q.question}</h2>
