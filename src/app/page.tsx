@@ -191,8 +191,6 @@ function AuthScreen({ onAuthed }: { onAuthed: (s: Student) => void }) {
               )}
             </AnimatePresence>
 
-            <div className="mt-5"><ExamQuestions /></div>
-
             {/* زر الأدمن يظهر فقط في الشاشة الرئيسية */}
             {mode !== 'home' && (
               <div className="pt-4 mt-4 border-t text-center">
