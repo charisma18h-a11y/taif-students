@@ -1,0 +1,20 @@
+ 'use client'
+import {useCallback,useEffect,useMemo,useState} from 'react'
+import {Card} from '@/components/ui/card'
+import {Button} from '@/components/ui/button'
+import {Input} from '@/components/ui/input'
+import {Textarea} from '@/components/ui/textarea'
+type Course={id:string;title:string;active:boolean}
+type Row={student_id:string;course_id:string;section:string;name:string;phone:string;university_id:string|null}
+type Student={id:string;name:string;phone:string;universityId:string|null}
+export default function StaffPanel(){
+ const [courses,setCourses]=useState<Course[]>([]),[rows,setRows]=useState<Row[]>([]),[students,setStudents]=useState<Student[]>([]),[rights,setRights]=useState<{can_publish:boolean;can_review_students:boolean}|null>(null)
+ const [subject,setSubject]=useState(''),[type,setType]=useState('واجب'),[title,setTitle]=useState(''),[description,setDescription]=useState(''),[filter,setFilter]=useState(''),[q,setQ]=useState(''),[err,setErr]=useState(''),[msg,setMsg]=useState(''),[busy,setBusy]=useState(false)
+ const load=useCallback(async()=>{try{const r=await fetch('/api/staff',{cache:'no-store'}),d=await r.json();if(!r.ok)throw Error(d.error);setCourses(d.courses||[]);setRows(d.rows||[]);setStudents(d.students||[]);setRights(d.permissions);setErr('')}catch(e){setErr(e instanceof Error?e.message:'تعذر تحميل لوحة الإدارة')}},[])
+ useEffect(()=>{void load()},[load])
+ const shown=useMemo(()=>students.filter(s=>(!filter||rows.some(r=>r.course_id===filter&&r.student_id===s.id))&&`${s.name} ${s.phone} ${s.universityId||''}`.includes(q)),[students,rows,filter,q])
+ async function publish(){setBusy(true);setErr('');setMsg('');try{const r=await fetch('/api/staff',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject,type,title,description})}),d=await r.json();if(!r.ok)throw Error(d.error);setTitle('');setDescription('');setMsg('تم نشر المطلوب للطلاب المسجلين في المادة')}catch(e){setErr(e instanceof Error?e.message:'فشل النشر')}finally{setBusy(false)}}
+ return <section dir="rtl" className="space-y-4"><h2 className="text-2xl font-bold">لوحة العضو المفوّض</h2>{rights?.can_publish&&<Card className="p-5 space-y-3"><h3 className="font-bold">نشر واجب أو اختبار للمادة</h3><select className="w-full rounded-lg border p-2 bg-background" value={subject} onChange={e=>setSubject(e.target.value)}><option value="">اختر المادة</option>{courses.filter(c=>c.active).map(c=><option key={c.id} value={c.title}>{c.title}</option>)}</select><select className="w-full rounded-lg border p-2 bg-background" value={type} onChange={e=>setType(e.target.value)}><option value="واجب">واجب</option><option value="اختبار">اختبار</option></select><Input placeholder="عنوان المطلوب" value={title} onChange={e=>setTitle(e.target.value)}/><Textarea placeholder="التفاصيل" value={description} onChange={e=>setDescription(e.target.value)}/><Button disabled={busy||!title.trim()||!description.trim()||!subject} onClick={()=>void publish()}>نشر</Button></Card>}
+ {rights?.can_review_students&&<Card className="p-5 space-y-3"><h3 className="font-bold">الطلاب وعضويات المواد</h3><Input value={q} onChange={e=>setQ(e.target.value)} placeholder="بحث بالاسم أو الجوال أو الرقم الجامعي"/><select className="w-full rounded-lg border p-2 bg-background" value={filter} onChange={e=>setFilter(e.target.value)}><option value="">كل الطلاب</option>{courses.map(c=><option value={c.id} key={c.id}>{c.title}</option>)}</select><div className="max-h-80 overflow-y-auto space-y-2">{shown.map(s=><div key={s.id} className="rounded-lg border p-3"><b>{s.name}</b><p dir="ltr" className="text-xs text-muted-foreground text-right">{s.phone} · {s.universityId||'بدون رقم جامعي'}</p><div className="text-xs">{rows.filter(r=>r.student_id===s.id).map(r=><span key={r.course_id} className="mr-2">{courses.find(c=>c.id===r.course_id)?.title}: {r.section}</span>)}{!rows.some(r=>r.student_id===s.id)&&'لم يسجل أي مادة'}</div></div>)}</div></Card>}
+ {err&&<p role="alert" className="text-red-500">{err}</p>}{msg&&<p role="status" className="text-emerald-500">{msg}</p>}</section>
+}

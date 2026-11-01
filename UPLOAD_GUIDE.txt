@@ -1,0 +1,1 @@
+Upload 4 .tsx files directly to GitHub repository main/src/components/ and 2 .ts files to main/src/lib/. Do not upload the ZIP or a nested src folder. Commit changes and verify the new commit hash in Vercel Deployments.
