@@ -1,0 +1,9 @@
+GROUPS DISPLAY FIX - 2026-11-01
+
+1. The /api/university-groups route first reads public.group_students through the existing DATABASE_URL used by Prisma.
+2. If those records are not accessible, it tries the separate groups Supabase REST listing.
+3. If neither source returns members, it displays the original 66 names as a READ-ONLY ARCHIVED roster with a prominent warning. It will NOT falsely report that this archive is live data or permit join/move while in archived mode.
+4. Server logs show the roster source and row count. Look for [groups] primary PostgreSQL roster, [groups] REST roster, or [groups] LIVE DATABASE EMPTY.
+5. No extra SQL is required for the archival display. Real shared join/move requires the same group_students table to exist in the DATABASE_URL project, along with the SQL functions, or a working separate REST source.
+
+Upload files under taif-students-main to the existing GitHub repository root (not as a nested folder). Wait for a new Ready Production deployment. Sign in and refresh the groups page.
