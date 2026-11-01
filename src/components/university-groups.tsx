@@ -2,20 +2,22 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeftRight, BookOpen, CheckCircle2, ChevronDown, Crown, LockKeyhole, RefreshCw, Search, ShieldCheck, Sparkles, Users, X } from 'lucide-react'
+import { ORIGINAL_GROUPS_ROSTER } from '@/lib/original-groups-roster'
 
 type Member = { group_id: number; name: string; role: string }
 type Membership = { group_id: number; role: string }
 const labels = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة', 'السادسة', 'السابعة', 'الثامنة']
 
 export default function UniversityGroups() {
-  const [members, setMembers] = useState<Member[]>([])
+  const [members, setMembers] = useState<Member[]>(ORIGINAL_GROUPS_ROSTER)
+  const [archiveNotice, setArchiveNotice] = useState<string | null>('الأسماء الـ66 من القائمة الأصلية متاحة للعرض. التسجيل وتغيير المجموعة متوقفان إلى أن ينجح اتصال قاعدة البيانات الحية.')
   const [mine, setMine] = useState<Membership | null>(null)
   const [expanded, setExpanded] = useState<number | null>(null)
   const [target, setTarget] = useState<number | null>(null)
   const [password, setPassword] = useState('')
   const [search, setSearch] = useState('')
   const [busy, setBusy] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
@@ -24,10 +26,23 @@ export default function UniversityGroups() {
       const res = await fetch('/api/university-groups', { cache: 'no-store' })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'تعذر تحميل المجموعات')
-      setMembers(Array.isArray(data.members) ? data.members : [])
-      setMine(data.mine || null)
+      const liveMembers = Array.isArray(data.members) && data.members.length > 0 ? data.members as Member[] : null
+      if (liveMembers) {
+        setMembers(liveMembers)
+        setMine(data.mine || null)
+        setArchiveNotice(data.archiveNotice || (data.source === 'snapshot' ? 'قائمة أرشيفية للعرض فقط؛ انضمام الطلاب وتغيير المجموعات غير متاحين حاليًا.' : null))
+      } else {
+        setMembers(ORIGINAL_GROUPS_ROSTER)
+        setMine(null)
+        setArchiveNotice('القوائم الأصلية للـ66 طالبًا (عرض فقط). قاعدة البيانات الحية لم تُرجع أسماء؛ لا يمكن الانضمام أو تغيير المجموعة الآن.')
+      }
       setError('')
-    } catch (e) { setError(e instanceof Error ? e.message : 'تعذر تحميل البيانات') }
+    } catch (e) {
+      setMembers(ORIGINAL_GROUPS_ROSTER)
+      setMine(null)
+      setArchiveNotice('القائمة الأصلية للـ66 طالبًا ظاهرة للعرض فقط؛ تعذر التحقق من اتصال قاعدة البيانات الحية.')
+      setError(e instanceof Error ? e.message : 'تعذر تحميل البيانات الحية')
+    }
     finally { setLoading(false) }
   }, [])
 
@@ -46,7 +61,7 @@ export default function UniversityGroups() {
   }).filter(group => !q || `المجموعة ${group.label}`.includes(q) || group.roster.some(m => m.name.toLocaleLowerCase('ar').includes(q))), [members, q])
 
   const save = async () => {
-    if (target === null || busy) return
+    if (target === null || busy || archiveNotice) return
     setBusy(true); setError(''); setMessage('')
     try {
       const res = await fetch('/api/university-groups', {
@@ -82,6 +97,7 @@ export default function UniversityGroups() {
       <button className="ug-refresh" type="button" onClick={()=>void refresh()} disabled={loading}><RefreshCw size={17}/> تحديث القوائم</button>
     </div>
 
+    {archiveNotice && <div className="ug-notice ug-error" role="status">{archiveNotice}</div>}
     {message && <div className="ug-notice ug-success" role="status"><CheckCircle2 size={18}/>{message}</div>}
     {error && <div className="ug-notice ug-error" role="alert">{error}</div>}
     {loading ? <div className="ug-loading">جاري تحميل مجموعات الطلاب...</div> :
@@ -96,7 +112,7 @@ export default function UniversityGroups() {
           <div className="ug-leader"><div className="ug-crown"><Crown size={18}/></div><div><small>قائد المجموعة</small><strong>{group.leader?.name || 'لم يتم تعيين قائد'}</strong></div></div>
           <button type="button" className="ug-members-toggle" onClick={()=>setExpanded(isOpen?null:group.id)} aria-expanded={isOpen}><span>استعراض أعضاء المجموعة</span><ChevronDown size={17} className={isOpen?'ug-rotated':''}/></button>
           {isOpen && <div className="ug-members">{group.others.length ? group.others.map((member, index)=><div className="ug-member" key={`${member.name}-${index}`}><span>{String(index+1).padStart(2,'0')}</span><p>{member.name}</p></div>) : <p className="ug-no-members">لا يوجد أعضاء مسجلون بعد</p>}</div>}
-          <button type="button" className={`ug-join ${active?'ug-join-current':''}`} onClick={()=>{
+          <button type="button" disabled={!!archiveNotice} className={`ug-join ${active?'ug-join-current':''}`} onClick={()=>{
             if (active) {setExpanded(isOpen?null:group.id);return}
             setMessage('');setError('');setPassword('');setTarget(group.id)
           }}>{active ? <><CheckCircle2 size={16}/> أنت في هذه المجموعة</> : mine ? <><ArrowLeftRight size={16}/> تغيير إلى هذه المجموعة</> : <><BookOpen size={16}/> انضم للمجموعة</>}</button>
