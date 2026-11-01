@@ -1,0 +1,18 @@
+وش علينا — نسخة التصميم الملكي 2026
+
+1) انسخ محتويات مجلد taif-students-main بالكامل إلى جذر مستودع GitHub الحالي taif-students (وليس المجلد نفسه).
+2) أبقِ متغيرات البيئة الأصلية DATABASE_URL وSESSION_SECRET وADMIN_PASSWORD كما هي في Vercel.
+3) أضف متغيري البيئة (يفضل في Vercel):
+GROUPS_SUPABASE_URL=https://vhiwizczjipxzvhbdmje.supabase.co
+GROUPS_SUPABASE_PUBLISHABLE_KEY=مفتاحك العام sb_publishable الذي قدمته سابقا
+4) يجب وجود public.group_students وpublic.group_admin_settings ودوال list_group_students, join_student_group, my_group_by_phone, move_student_by_phone في مشروع Supabase الخاص بالمجموعات.
+5) تأكد أن قاعدة المجموعات تحوي 66 طالبا.
+6) ادخل Vercel > Deployments وتأكد أن الإنتاج Production يشير إلى آخر Commit من GitHub.
+7) سجل دخول حساب طالب لديه رقم جامعي، ثم اختر زر «المهارات الجامعية · المجموعات».
+8) إن كنت ترى الواجهة القديمة، افتح الرابط Production وتأكد أن التحديث على الفرع الصحيح، واستخدم Ctrl+Shift+R.
+
+ملاحظات:
+• لا تمسح جداول Supabase أو قاعدة بيانات طلاب وش علينا.
+• القادة/الأسماء القديمة بلا جوال قد يلزم ربطهم مع الحسابات لاحقا.
+• هذه النسخة تعتمد على صلاحيات RPC القديمة للمجموعات؛ يوصى بنقل الكتابة إلى حساب خادم مفوض وRLS أدق قبل التوسع.
+• لم تختبر النسخة على بياناتك الفعلية في الإنتاج.

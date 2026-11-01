@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import ExamQuestions from '@/components/exam-questions'
+import UniversityGroups from '@/components/university-groups'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -921,6 +922,7 @@ function StudentDashboard({
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<'all' | 'new' | 'viewed'>('all')
   const [showProfile, setShowProfile] = useState(false)
+  const [showGroups, setShowGroups] = useState(false)
   const { toast } = useToast()
 
   const load = useCallback(async () => {
@@ -980,10 +982,13 @@ function StudentDashboard({
               <div className="size-16 sm:size-20 rounded-2xl flex items-center justify-center profile-avatar text-3xl font-extrabold">{student.name.trim().charAt(0)}</div>
               <div><p className="text-sm text-amber-200/80 mb-1">لوحتك الجامعية</p><h2 className="text-2xl sm:text-3xl font-bold">هلا، {student.name} 👋</h2><p className="text-sm text-slate-300 mt-2">كل المطلوب منك في مكان واحد</p></div>
             </div>
-            <Button className="profile-button" onClick={() => setShowProfile(v => !v)}><UserCircle2 className="size-4 ml-2" />{showProfile ? 'العودة للواجبات' : 'ملفي الشخصي'}</Button>
+            <div className="flex flex-wrap gap-2">
+              <Button className="profile-button" onClick={() => {setShowGroups(v => !v);setShowProfile(false)}}><BookOpen className="size-4 ml-2" />{showGroups ? 'العودة للمهام' : 'المهارات الجامعية · المجموعات'}</Button>
+              <Button className="profile-button" onClick={() => {setShowProfile(v => !v);setShowGroups(false)}}><UserCircle2 className="size-4 ml-2" />{showProfile ? 'العودة للواجبات' : 'ملفي الشخصي'}</Button>
+            </div>
           </div>
         </motion.section>
-        {showProfile ? (
+        {showGroups ? <UniversityGroups /> : showProfile ? (
           <motion.section initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} className="grid gap-4 md:grid-cols-2">
             <Card className="p-6 space-y-5"><div className="flex items-center gap-3"><div className="size-14 rounded-2xl profile-avatar flex items-center justify-center text-2xl font-bold">{student.name.trim().charAt(0)}</div><div><h3 className="font-bold text-xl">{student.name}</h3><p className="text-sm text-muted-foreground">الملف الشخصي للطالب</p></div></div><div className="border-t pt-4 space-y-4"><div className="flex items-center gap-3"><User className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">الاسم الكامل</p><p className="font-semibold">{student.name}</p></div></div><div className="flex items-center gap-3"><Phone className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">رقم الجوال</p><p dir="ltr" className="font-semibold text-right">{student.phone}</p></div></div><div className="flex items-center gap-3"><GraduationCap className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">الرقم الجامعي</p><p dir="ltr" className="font-semibold text-right">{student.universityId}</p></div></div></div><p className="text-xs text-muted-foreground">بيانات هذا الملف خاصة بحسابك وإدارة الموقع ولا تظهر للطلاب الآخرين. إدخال الرقم لا يعني أن الجامعة وثقت الحساب.</p></Card>
             <Card className="p-6"><h3 className="text-xl font-bold mb-5">إنجازك الدراسي</h3><div className="grid grid-cols-2 gap-3"><div className="profile-metric"><p className="text-3xl font-bold text-primary">{assignments.length}</p><p className="text-sm text-muted-foreground">إجمالي المطلوب</p></div><div className="profile-metric"><p className="text-3xl font-bold text-primary">{viewedIds.length}</p><p className="text-sm text-muted-foreground">تمت مشاهدتها</p></div></div><div className="mt-6"><div className="flex justify-between text-sm mb-2"><span>نسبة الاطلاع</span><span>{assignments.length ? Math.round(viewedIds.length / assignments.length * 100) : 0}%</span></div><div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary transition-all" style={{width:`${assignments.length ? Math.min(100,Math.round(viewedIds.length / assignments.length * 100)) : 0}%`}} /></div><p className="text-xs text-muted-foreground mt-3">الاطلاع لا يعني تسليم الواجب؛ هذه النسبة تحسب العناصر التي فتحتها فقط.</p></div></Card>
