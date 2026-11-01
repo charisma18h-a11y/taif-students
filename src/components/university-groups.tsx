@@ -10,14 +10,14 @@ const labels = ['الأولى', 'الثانية', 'الثالثة', 'الراب�
 
 export default function UniversityGroups() {
   const [members, setMembers] = useState<Member[]>(ORIGINAL_GROUPS_ROSTER)
-  const [archiveNotice, setArchiveNotice] = useState<string | null>('الأسماء الـ66 من القائمة الأصلية متاحة للعرض. التسجيل وتغيير المجموعة متوقفان إلى أن ينجح اتصال قاعدة البيانات الحية.')
+  const [archiveNotice, setArchiveNotice] = useState<string | null>('جاري تحميل القوائم الحية...')
   const [mine, setMine] = useState<Membership | null>(null)
   const [expanded, setExpanded] = useState<number | null>(null)
   const [target, setTarget] = useState<number | null>(null)
   const [password, setPassword] = useState('')
   const [search, setSearch] = useState('')
   const [busy, setBusy] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
