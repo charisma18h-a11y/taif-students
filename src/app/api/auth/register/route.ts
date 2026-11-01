@@ -62,6 +62,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'هذا الرقم الجامعي مستخدم في حساب آخر. تواصل مع المشرف إذا كان رقمك.' }, { status: 409 })
     }
 
+    const duplicateName = await db.student.findFirst({
+      where: { name: { equals: name, mode: 'insensitive' } }, select: { id: true },
+    })
+    if (duplicateName) return NextResponse.json({error:'هذا الاسم مسجل بالفعل. إذا كان حسابك استخدم تسجيل الدخول.'},{status:409})
+
     // إنشاء الطالب الجديد مع تشفير الباسورد
     const student = await db.student.create({
       data: {

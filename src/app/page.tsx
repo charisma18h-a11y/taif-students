@@ -12,6 +12,10 @@ import {
 import Image from 'next/image'
 import ExamQuestions from '@/components/exam-questions'
 import UniversityGroups from '@/components/university-groups'
+import GroupAdminManager from '@/components/group-admin-manager'
+import StudentCoursePicker from '@/components/student-course-picker'
+import ProfileEditor from '@/components/profile-editor'
+import CourseAdminManager from '@/components/course-admin-manager'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -923,6 +927,7 @@ function StudentDashboard({
   const [filter, setFilter] = useState<'all' | 'new' | 'viewed'>('all')
   const [showProfile, setShowProfile] = useState(false)
   const [showGroups, setShowGroups] = useState(false)
+  const [hasSelectedCourses, setHasSelectedCourses] = useState(false)
   const { toast } = useToast()
 
   const load = useCallback(async () => {
@@ -988,9 +993,11 @@ function StudentDashboard({
             </div>
           </div>
         </motion.section>
+        {!showGroups && <StudentCoursePicker onEnrollmentChange={setHasSelectedCourses} />}
         {showGroups ? <UniversityGroups /> : showProfile ? (
           <motion.section initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} className="grid gap-4 md:grid-cols-2">
             <Card className="p-6 space-y-5"><div className="flex items-center gap-3"><div className="size-14 rounded-2xl profile-avatar flex items-center justify-center text-2xl font-bold">{student.name.trim().charAt(0)}</div><div><h3 className="font-bold text-xl">{student.name}</h3><p className="text-sm text-muted-foreground">الملف الشخصي للطالب</p></div></div><div className="border-t pt-4 space-y-4"><div className="flex items-center gap-3"><User className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">الاسم الكامل</p><p className="font-semibold">{student.name}</p></div></div><div className="flex items-center gap-3"><Phone className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">رقم الجوال</p><p dir="ltr" className="font-semibold text-right">{student.phone}</p></div></div><div className="flex items-center gap-3"><GraduationCap className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">الرقم الجامعي</p><p dir="ltr" className="font-semibold text-right">{student.universityId}</p></div></div></div><p className="text-xs text-muted-foreground">بيانات هذا الملف خاصة بحسابك وإدارة الموقع ولا تظهر للطلاب الآخرين. إدخال الرقم لا يعني أن الجامعة وثقت الحساب.</p></Card>
+            <ProfileEditor student={student} onUpdated={onStudentUpdated} />
             <Card className="p-6"><h3 className="text-xl font-bold mb-5">إنجازك الدراسي</h3><div className="grid grid-cols-2 gap-3"><div className="profile-metric"><p className="text-3xl font-bold text-primary">{assignments.length}</p><p className="text-sm text-muted-foreground">إجمالي المطلوب</p></div><div className="profile-metric"><p className="text-3xl font-bold text-primary">{viewedIds.length}</p><p className="text-sm text-muted-foreground">تمت مشاهدتها</p></div></div><div className="mt-6"><div className="flex justify-between text-sm mb-2"><span>نسبة الاطلاع</span><span>{assignments.length ? Math.round(viewedIds.length / assignments.length * 100) : 0}%</span></div><div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary transition-all" style={{width:`${assignments.length ? Math.min(100,Math.round(viewedIds.length / assignments.length * 100)) : 0}%`}} /></div><p className="text-xs text-muted-foreground mt-3">الاطلاع لا يعني تسليم الواجب؛ هذه النسبة تحسب العناصر التي فتحتها فقط.</p></div></Card>
           </motion.section>
         ) : (<>
@@ -1283,7 +1290,7 @@ function AssignmentFormModal({
 
 // ===== لوحة الأدمن =====
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
-  const [tab, setTab] = useState<'overview' | 'assignments' | 'students'>('overview')
+  const [tab, setTab] = useState<'overview' | 'assignments' | 'students' | 'group-admin' | 'courses'>('overview')
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
@@ -1335,6 +1342,19 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
     }
   }
 
+  const removeStudentAccount = async (s: Student) => {
+    if (!window.confirm(`هل تريد حذف حساب ${s.name} نهائياً؟ سيُمنع من الدخول بهذا الحساب، وستحذف بيانات مواده. هذا مختلف عن إزالته من مادة واحدة.`)) return
+    const confirmName = window.prompt('للتأكيد اكتب كلمة حذف:')
+    if (confirmName !== 'حذف') return
+    try {
+      const res = await fetch(`/api/admin/students/${encodeURIComponent(s.id)}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'فشل الحذف')
+      toast({title: 'تم حذف حساب الطالب'})
+      await loadAll()
+    } catch(e) { toast({ variant: 'destructive', title: e instanceof Error ? e.message : 'تعذر الحذف' }) }
+  }
+
   const togglePublish = async (a: Assignment) => {
     try {
       const res = await fetch(`/api/admin/assignments/${a.id}`, {
@@ -1376,7 +1396,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       <main className="container mx-auto px-4 py-6 flex-1">
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-          <TabsList className="grid grid-cols-3 w-full mb-6 h-12">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-5 w-full mb-6 h-auto min-h-12">
             <TabsTrigger value="overview" className="gap-1">
               <LayoutDashboard className="size-4" />
               نظرة عامة
@@ -1389,7 +1409,18 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               <Users className="size-4" />
               الطلاب
             </TabsTrigger>
+            <TabsTrigger value="courses" className="gap-1">
+              <BookOpen className="size-4" />
+              المواد والشُّعب
+            </TabsTrigger>
+            <TabsTrigger value="group-admin" className="gap-1">
+              <Shield className="size-4" />
+              المجموعات والمجلس
+            </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="group-admin"><GroupAdminManager /></TabsContent>
+          <TabsContent value="courses"><CourseAdminManager /></TabsContent>
 
           {/* ===== نظرة عامة ===== */}
           <TabsContent value="overview" className="space-y-6">
@@ -1570,7 +1601,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                         <th className="p-3 font-medium">الرقم الجامعي</th>
                         <th className="p-3 font-medium">المشاهدات</th>
                         <th className="p-3 font-medium">تاريخ التسجيل</th>
-                        <th className="p-3 font-medium">آخر دخول</th>
+                        <th className="p-3 font-medium">آخر دخول</th><th className="p-3 font-medium">إدارة الحساب</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1593,6 +1624,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
                               ? new Date(s.lastLogin).toLocaleDateString('ar-SA')
                               : '—'}
                           </td>
+                          <td className="p-3"><Button size="sm" variant="destructive" onClick={() => removeStudentAccount(s)}><Trash2 className="size-4 ml-1"/>حذف الحساب</Button></td>
                         </tr>
                       ))}
                     </tbody>
