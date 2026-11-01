@@ -10,6 +10,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'غير مصرّح' }, { status: 401 })
     }
 
+    if (!student.universityId) {
+      return NextResponse.json({ error: 'أكمل الرقم الجامعي في ملفك أولاً' }, { status: 403 })
+    }
+
     const body = await req.json()
     const assignmentId = body.assignmentId
     if (!assignmentId) {

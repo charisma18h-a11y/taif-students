@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      student: { id: student.id, name: student.name, phone: student.phone },
+      student: { id: student.id, name: student.name, phone: student.phone, universityId: student.universityId },
     })
   } catch (e) {
     console.error('login error', e)

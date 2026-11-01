@@ -15,6 +15,7 @@ model Student {
   id        String    @id @default(cuid())
   name      String
   phone     String    @unique
+  universityId String? @unique @map("university_id") // nullable فقط للحسابات القديمة
   password  String    // هاش الباسورد (scrypt)
   createdAt DateTime  @default(now()) @map("created_at")
   lastLogin DateTime? @map("last_login")

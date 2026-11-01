@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { setStudentSession, validateSaudiPhone, hashPassword, validatePassword } from '@/lib/auth'
+import { setStudentSession, validateSaudiPhone, validateUniversityId, hashPassword, validatePassword } from '@/lib/auth'
 
 // تسجيل طالب جديد (اسم + جوال + باسورد)
 export async function POST(req: NextRequest) {
@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const name = (body.name || '').toString().trim()
     const phoneInput = (body.phone || '').toString().trim()
+    const universityInput = body.universityId
     const password = (body.password || '').toString()
 
     if (!name || name.length < 2) {
@@ -26,6 +27,11 @@ export async function POST(req: NextRequest) {
         },
         { status: 400 }
       )
+    }
+
+    const universityId = validateUniversityId(universityInput)
+    if (!universityId.valid) {
+      return NextResponse.json({ error: 'اكتب رقماً جامعياً صحيحاً من 6 إلى 15 رقماً' }, { status: 400 })
     }
 
     // التحقق من قوة الباسورد
@@ -49,11 +55,19 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    const duplicatedId = await db.student.findUnique({
+      where: { universityId: universityId.normalized }, select: { id: true },
+    })
+    if (duplicatedId) {
+      return NextResponse.json({ error: 'هذا الرقم الجامعي مستخدم في حساب آخر. تواصل مع المشرف إذا كان رقمك.' }, { status: 409 })
+    }
+
     // إنشاء الطالب الجديد مع تشفير الباسورد
     const student = await db.student.create({
       data: {
         name,
         phone: normalized,
+        universityId: universityId.normalized,
         password: hashPassword(password),
       },
     })
@@ -62,9 +76,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      student: { id: student.id, name: student.name, phone: student.phone },
+      student: { id: student.id, name: student.name, phone: student.phone, universityId: student.universityId },
     })
   } catch (e) {
+    if (e && typeof e === 'object' && 'code' in e && e.code === 'P2002') {
+      return NextResponse.json({ error: 'رقم الجوال أو الرقم الجامعي مستخدم بالفعل' }, { status: 409 })
+    }
     console.error('register error', e)
     return NextResponse.json({ error: 'حدث خطأ، حاول مرة ثانية' }, { status: 500 })
   }
