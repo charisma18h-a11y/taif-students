@@ -1,0 +1,17 @@
+إصلاح خطأ Vercel: Cannot resolve @/components/portal-hub
+
+هذا الملف موجود في النسخة التي زودناك بها، لكن Vercel لم يجده في المستودع عند التزامن.
+
+1) فك ضغط الحزمة.
+2) افتح GitHub المستودع taif-students في الفرع main.
+3) انقل الملفات إلى نفس المسارات داخل المستودع:
+   src/components/portal-hub.tsx
+   src/components/course-select.tsx
+   src/app/api/portal-hub/route.ts
+   src/app/api/course-catalog/route.ts
+4) لا تضعها داخل مجلد اضافي باسم اصلاح_خطأ_portal_hub.
+5) تحقق أن المسار src/components/portal-hub.tsx ظاهر في GitHub قبل إعادة النشر.
+6) بما أن سجل البناء يشير إلى app/page.tsx بدل src/app/page.tsx، افحص هل يوجد app/ في جذر المستودع. لا تحذفه عشوائيا: قد يكون مشروع Vercel يستخدمه فعليًا. إذا كان المشروع مقصودا أن يستخدم src/app، قم بمراجعة توحيد الشجرتين لتجنب التصادم قبل أي حذف.
+7) افحص Vercel > Deployments وتأكد أن آخر Commit في main هو الذي يجري بناؤه.
+
+هذه الحزمة تتضمن الملفات الأساسية لتصحيح النقص، لكنها لا تضمن تصحيح كل الملفات التي ربما لم تصل إلى المستودع. لا تعديل لبيانات Supabase مطلوب بسبب خطأ الاستيراد.
