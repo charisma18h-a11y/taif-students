@@ -9,6 +9,7 @@ export default function ExamQuestions({ expanded = false }: { expanded?: boolean
   const [questions, setQuestions] = useState<Question[]>([])
   const [status, setStatus] = useState<'loading' | 'ready' | 'error' | 'unauthorized'>('loading')
   const [attempt, setAttempt] = useState(0)
+  const [disabled,setDisabled] = useState(false)
   const [search, setSearch] = useState('')
   const searchId = useId()
   const filteredQuestions = questions.filter(q => matchesQuestionSearch(q.question, search))
@@ -27,6 +28,7 @@ export default function ExamQuestions({ expanded = false }: { expanded?: boolean
         const data = await response.json()
         if (!Array.isArray(data.questions)) throw new Error('Invalid response')
         setQuestions(data.questions)
+        setDisabled(data.disabled===true)
         setStatus('ready')
       })
       .catch(() => {
@@ -35,10 +37,11 @@ export default function ExamQuestions({ expanded = false }: { expanded?: boolean
     return () => controller.abort()
   }, [attempt])
 
+  if(disabled)return null
   return (
     <details open={expanded} dir="rtl" className="group rounded-2xl border border-amber-400/40 bg-[#101c30] text-white overflow-hidden">
       <summary className="cursor-pointer p-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-300">
-        <span className="font-bold text-xl text-amber-300">تسريبات الاختبار</span>
+        <span className="font-bold text-xl text-amber-300">أسئلة المراجعة</span>
         <span className="block mt-2 text-sm text-slate-300">فيزياء عامة ١ · {status === 'ready' ? `${questions.length} سؤال مع الإجابات` : 'الأسئلة والإجابات'} — اضغط للعرض أو الإغلاق</span>
       </summary>
       <div className="border-t border-white/10 p-4 sm:p-6 space-y-4">

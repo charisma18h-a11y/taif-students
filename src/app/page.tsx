@@ -14,8 +14,12 @@ import ExamQuestions from '@/components/exam-questions'
 import UniversityGroups from '@/components/university-groups'
 import GroupAdminManager from '@/components/group-admin-manager'
 import StudentCoursePicker from '@/components/student-course-picker'
+import HomeBoard from '@/components/home-board'
 import ProfileEditor from '@/components/profile-editor'
 import CourseAdminManager from '@/components/course-admin-manager'
+import QuestionAdminManager from '@/components/question-admin-manager'
+import StaffAdminManager from '@/components/staff-admin-manager'
+import StaffPanel from '@/components/staff-panel'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -107,7 +111,8 @@ function AuthScreen({ onAuthed }: { onAuthed: (s: Student) => void }) {
   const { toast } = useToast()
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-pattern">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-4 bg-pattern">
+      <div className="w-full max-w-5xl"><HomeBoard /></div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -685,6 +690,13 @@ function AdminLoginButton() {
 function StudentHeader({
   student, onLogout,
 }: { student: Student; onLogout: () => void }) {
+  const [courses,setCourses]=useState<{title:string;section:string}[]>([])
+  useEffect(()=>{
+    let active=true
+    const reload=()=>fetch('/api/my-courses',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{if(active&&d?.enrollments)setCourses(d.enrollments)}).catch(()=>{})
+    void reload();window.addEventListener('student-courses-updated',reload)
+    return()=>{active=false;window.removeEventListener('student-courses-updated',reload)}
+  },[])
   return (
     <header className="sticky top-0 z-30 glass border-b">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
@@ -695,6 +707,7 @@ function StudentHeader({
             <p className="text-xs text-muted-foreground truncate">
               مرحباً، {student.name}
             </p>
+            {courses.length>0&&<div className="mt-1 flex flex-wrap gap-1">{courses.map((c,i)=><span key={i} className="rounded-full bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 text-[10px] text-emerald-600 dark:text-emerald-300">{c.title} · {c.section}</span>)}</div>}
           </div>
         </div>
         <Button variant="ghost" size="sm" onClick={onLogout} className="shrink-0">
@@ -927,8 +940,19 @@ function StudentDashboard({
   const [filter, setFilter] = useState<'all' | 'new' | 'viewed'>('all')
   const [showProfile, setShowProfile] = useState(false)
   const [showGroups, setShowGroups] = useState(false)
-  const [hasSelectedCourses, setHasSelectedCourses] = useState(false)
+  const [showStaffPanel,setShowStaffPanel]=useState(false)
+  const [staffPermissions,setStaffPermissions]=useState<{can_publish:boolean;can_review_students:boolean}|null>(null)
+  const [hasSelectedCourses, setHasSelectedCourses] = useState<boolean | null>(null)
   const { toast } = useToast()
+
+  useEffect(()=>{fetch('/api/me',{cache:'no-store'}).then(r=>r.json()).then(d=>setStaffPermissions(d.permissions||null)).catch(()=>{})},[])
+
+  useEffect(() => {
+    if (!student.universityId) return
+    let alive=true
+    fetch('/api/my-courses',{cache:'no-store'}).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error);if(alive)setHasSelectedCourses(Array.isArray(d.enrollments)&&d.enrollments.length>0)}).catch(()=>{if(alive)setHasSelectedCourses(null)})
+    return ()=>{alive=false}
+  },[student.universityId])
 
   const load = useCallback(async () => {
     try {
@@ -943,8 +967,8 @@ function StudentDashboard({
     }
   }, [toast])
 
-  // لا نحمل محتوى الحساب القديم حتى يكتمل الرقم الجامعي. بعد الحفظ يُحمّل تلقائياً.
-  useEffect(() => { if (student.universityId) load() }, [load, student.universityId])
+  // تحديث الواجبات بمجرد حفظ المواد، وعدم عرض واجبات مادة قبل الانضمام إليها.
+  useEffect(() => { if (student.universityId && hasSelectedCourses === true) load() }, [load, student.universityId, hasSelectedCourses])
 
   const recordView = async (assignmentId: string) => {
     try {
@@ -988,13 +1012,17 @@ function StudentDashboard({
               <div><p className="text-sm text-amber-200/80 mb-1">لوحتك الجامعية</p><h2 className="text-2xl sm:text-3xl font-bold">هلا، {student.name} 👋</h2><p className="text-sm text-slate-300 mt-2">كل المطلوب منك في مكان واحد</p></div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button className="profile-button" onClick={() => {setShowGroups(v => !v);setShowProfile(false)}}><BookOpen className="size-4 ml-2" />{showGroups ? 'العودة للمهام' : 'المهارات الجامعية · المجموعات'}</Button>
-              <Button className="profile-button" onClick={() => {setShowProfile(v => !v);setShowGroups(false)}}><UserCircle2 className="size-4 ml-2" />{showProfile ? 'العودة للواجبات' : 'ملفي الشخصي'}</Button>
+              <Button className="profile-button" onClick={() => {setShowGroups(v => !v);setShowProfile(false);setShowStaffPanel(false)}}><BookOpen className="size-4 ml-2" />{showGroups ? 'العودة للمهام' : 'المهارات الجامعية · المجموعات'}</Button>
+              {(staffPermissions?.can_publish||staffPermissions?.can_review_students)&&<Button className="profile-button" onClick={()=>{setShowStaffPanel(v=>!v);setShowGroups(false);setShowProfile(false)}}><Shield className="size-4 ml-2"/>لوحة الإدارة المفوّضة</Button>}
+              <Button className="profile-button" onClick={() => {setShowProfile(v => !v);setShowGroups(false);setShowStaffPanel(false)}}><UserCircle2 className="size-4 ml-2" />{showProfile ? 'العودة للواجبات' : 'ملفي الشخصي'}</Button>
             </div>
           </div>
         </motion.section>
-        {!showGroups && <StudentCoursePicker onEnrollmentChange={setHasSelectedCourses} />}
-        {showGroups ? <UniversityGroups /> : showProfile ? (
+        {hasSelectedCourses === false && <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="تسجيل المواد إجباري"><div className="w-full max-w-3xl max-h-[92vh] overflow-y-auto"><StudentCoursePicker required onEnrollmentChange={(ok)=>{setHasSelectedCourses(ok);if(ok)window.dispatchEvent(new Event('student-courses-updated'))}}/></div></div>}
+        {hasSelectedCourses === null && <div className="rounded-xl border border-amber-500/40 p-4 text-center text-sm text-amber-300">جاري التحقق من موادك وشُعبك... إذا استمرت الرسالة، حدّث الصفحة.</div>}
+        {!showGroups && !showProfile && !showStaffPanel && <HomeBoard />}
+        {showProfile && <StudentCoursePicker onEnrollmentChange={(ok)=>{setHasSelectedCourses(ok);if(ok)window.dispatchEvent(new Event('student-courses-updated'))}}/>}
+        {showStaffPanel ? <StaffPanel/> : showGroups ? <UniversityGroups /> : showProfile ? (
           <motion.section initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} className="grid gap-4 md:grid-cols-2">
             <Card className="p-6 space-y-5"><div className="flex items-center gap-3"><div className="size-14 rounded-2xl profile-avatar flex items-center justify-center text-2xl font-bold">{student.name.trim().charAt(0)}</div><div><h3 className="font-bold text-xl">{student.name}</h3><p className="text-sm text-muted-foreground">الملف الشخصي للطالب</p></div></div><div className="border-t pt-4 space-y-4"><div className="flex items-center gap-3"><User className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">الاسم الكامل</p><p className="font-semibold">{student.name}</p></div></div><div className="flex items-center gap-3"><Phone className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">رقم الجوال</p><p dir="ltr" className="font-semibold text-right">{student.phone}</p></div></div><div className="flex items-center gap-3"><GraduationCap className="size-5 text-primary"/><div><p className="text-xs text-muted-foreground">الرقم الجامعي</p><p dir="ltr" className="font-semibold text-right">{student.universityId}</p></div></div></div><p className="text-xs text-muted-foreground">بيانات هذا الملف خاصة بحسابك وإدارة الموقع ولا تظهر للطلاب الآخرين. إدخال الرقم لا يعني أن الجامعة وثقت الحساب.</p></Card>
             <ProfileEditor student={student} onUpdated={onStudentUpdated} />
@@ -1132,6 +1160,8 @@ function AssignmentFormModal({
   const [type, setType] = useState(assignment?.type || 'واجب')
   const [details, setDetails] = useState(assignment?.details || '')
   const [subject, setSubject] = useState(assignment?.subject || '')
+  const [availableSubjects,setAvailableSubjects]=useState<string[]>([])
+  useEffect(()=>{fetch('/api/admin/courses').then(r=>r.json()).then(d=>setAvailableSubjects((d.courses||[]).map((c:{title:string})=>c.title))).catch(()=>{})},[])
   const [dueDate, setDueDate] = useState(
     assignment?.dueDate ? new Date(assignment.dueDate).toISOString().slice(0, 10) : ''
   )
@@ -1224,13 +1254,12 @@ function AssignmentFormModal({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>المادة (اختياري)</Label>
-                <Input
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="مثال: البرمجة، قواعد البيانات..."
-                  className="h-11"
-                />
+                <Label>المادة المستهدفة</Label>
+                <select className="w-full h-11 rounded-lg border bg-background px-3" value={subject} onChange={e=>setSubject(e.target.value)}>
+                  <option value="">إعلان عام لجميع الطلاب</option>
+                  {availableSubjects.map(title=><option key={title} value={title}>{title}</option>)}
+                </select>
+                <p className="text-xs text-muted-foreground">عند اختيار مادة سيظهر المطلوب فقط للطلاب المسجلين فيها. الإعلان العام يظهر للجميع.</p>
               </div>
               <div className="space-y-2">
                 <Label>الوصف *</Label>
@@ -1290,7 +1319,7 @@ function AssignmentFormModal({
 
 // ===== لوحة الأدمن =====
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
-  const [tab, setTab] = useState<'overview' | 'assignments' | 'students' | 'group-admin' | 'courses'>('overview')
+  const [tab, setTab] = useState<'overview' | 'assignments' | 'students' | 'group-admin' | 'courses' | 'question-admin' | 'staff-admin'>('overview')
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
@@ -1396,7 +1425,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       <main className="container mx-auto px-4 py-6 flex-1">
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-          <TabsList className="grid grid-cols-2 sm:grid-cols-5 w-full mb-6 h-auto min-h-12">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 w-full mb-6 h-auto min-h-12">
             <TabsTrigger value="overview" className="gap-1">
               <LayoutDashboard className="size-4" />
               نظرة عامة
@@ -1413,12 +1442,16 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               <BookOpen className="size-4" />
               المواد والشُّعب
             </TabsTrigger>
+            <TabsTrigger value="staff-admin" className="gap-1"><Shield className="size-4" />صلاحيات الإدارة</TabsTrigger>
+            <TabsTrigger value="question-admin" className="gap-1"><FileText className="size-4" />أسئلة المراجعة</TabsTrigger>
             <TabsTrigger value="group-admin" className="gap-1">
               <Shield className="size-4" />
               المجموعات والمجلس
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="staff-admin"><StaffAdminManager /></TabsContent>
+          <TabsContent value="question-admin"><QuestionAdminManager /></TabsContent>
           <TabsContent value="group-admin"><GroupAdminManager /></TabsContent>
           <TabsContent value="courses"><CourseAdminManager /></TabsContent>
 

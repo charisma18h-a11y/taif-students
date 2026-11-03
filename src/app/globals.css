@@ -222,3 +222,39 @@ body{background:#080d14;color:#f3f5f5}
 .ug-board{margin:18px 0 24px;padding:22px;border:1px solid rgba(220,181,91,.28);border-radius:22px;background:linear-gradient(115deg,rgba(28,38,28,.95),rgba(11,21,17,.96));box-shadow:0 12px 50px rgba(0,0,0,.16)}
 .ug-board-heading{display:flex;align-items:center;gap:12px;color:#edcc7a;margin-bottom:18px}.ug-board-heading h3{font-size:1.4rem;font-weight:900}.ug-board-heading p{font-size:.8rem;color:#a8b7af}
 .ug-board-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.ug-board-person{border:1px solid rgba(236,201,113,.18);border-radius:15px;background:rgba(255,255,255,.035);padding:17px;display:flex;flex-direction:column;gap:5px;color:#fff}.ug-board-person small{color:#efd384;font-weight:700}.ug-board-person strong{font-weight:900;font-size:1rem}.ug-board-person p{color:#a7b5a9;font-size:.78rem}.ug-board-badge{color:#e8bc66;margin-bottom:5px}
+
+/* Platform 2026: indigo / arctic-blue system, with accessible navigation and group cards */
+:root, .dark {
+ --background:#091021;--foreground:#eef4ff;--card:#111e35;--card-foreground:#eef4ff;
+ --popover:#111e35;--popover-foreground:#eef4ff;--primary:#91b8ff;--primary-foreground:#07142b;
+ --secondary:#1b2b45;--secondary-foreground:#eef4ff;--muted:#1b2b45;--muted-foreground:#a8b9d2;
+ --accent:#203c60;--accent-foreground:#eef4ff;--border:#32435b;--input:#283952;--ring:#91b8ff;
+}
+body{background:#091021;color:#eef4ff}
+.bg-pattern{background-color:#091021!important;background-image:radial-gradient(ellipse at 80% 0%,rgba(67,118,205,.22),transparent 46%),radial-gradient(ellipse at 10% 80%,rgba(61,175,185,.10),transparent 50%),linear-gradient(150deg,#091021,#0d1931)!important}
+.ug-wrap{color:#eef4ff}
+.ug-hero{border-color:rgba(145,184,255,.3);background:linear-gradient(118deg,#182e55 0%,#122544 54%,#0c1a31 100%);box-shadow:0 25px 70px rgba(2,9,28,.28)}
+.ug-hero:after{background:radial-gradient(circle at 85% 10%,rgba(73,167,245,.22),transparent 46%)}
+.ug-hero h2 span,.ug-stats strong,.ug-number,.ug-crown{color:#a6c9ff}
+.ug-eyebrow{color:#b6d5ff;background:rgba(115,164,242,.12);border-color:rgba(115,164,242,.3)}
+.ug-status{color:#9ee4dd}
+.ug-stats>div{background:rgba(5,14,35,.48);border-color:rgba(145,184,255,.22)}
+.ug-guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}
+.ug-guide>div{display:flex;flex-direction:column;gap:6px;position:relative;padding:16px 18px 16px 52px;border-radius:17px;background:#13223b;border:1px solid #2d4164}
+.ug-guide span{position:absolute;left:14px;top:16px;color:#91b8ff;font:800 18px system-ui}
+.ug-guide strong{font-size:13px;color:#f1f6ff}.ug-guide small{font-size:11px;color:#abc0da}
+.ug-search{background:#101d35;border-color:#344c70;color:#b6d5ff}.ug-refresh{background:#182a48;border-color:#344c70;color:#edf4ff}.ug-refresh:hover{background:#264069}
+.ug-card{background:linear-gradient(160deg,#182946,#101d35);border-color:#304769;min-height:330px}
+.ug-card:hover{border-color:#91b8ff;box-shadow:0 18px 42px #030c2270}
+.ug-card-active{border-color:#6ad4c4;box-shadow:0 0 0 1px rgba(106,212,196,.25)}
+.ug-chip-muted{background:#203552;color:#c3d5ed}.ug-leader{background:#1d3050;border-color:#354a6a}.ug-crown{background:#28466b}
+.ug-members{background:#0a172d}.ug-member span{color:#9ebef5}
+.ug-join{background:linear-gradient(110deg,#a8cbff,#70a5f3);color:#07172e}
+.ug-join-current{color:#9ee4dd;border-color:#478e95;background:#15383f}
+.ug-modal{background:linear-gradient(135deg,#192d50,#0e1a32);border-color:#5474a2}
+.ug-modal-symbol{color:#a8cbff;background:#203b64;border-color:#5474a2}
+.ug-modal-actions button{background:#a8cbff;color:#0c1930}
+.ug-secret-label{color:#b9d3ff}.ug-secret-label input{background:#0c1c35;border-color:#4b6589}
+.ug-board{background:linear-gradient(115deg,#192b4b,#0e1b32);border-color:#38557f}.ug-board-heading,.ug-board-badge,.ug-board-person small{color:#a8cbff}
+.ug-board-person{border-color:#354b70}
+@media(max-width:700px){.ug-guide{grid-template-columns:1fr}.ug-guide>div{padding-block:12px}.ug-hero{flex-direction:column;align-items:stretch}.ug-stats>div{flex:1}.ug-toolbar{flex-wrap:wrap}.ug-refresh{width:100%;justify-content:center}}
