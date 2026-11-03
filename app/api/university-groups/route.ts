@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     await initialize()
     const result=await db.$transaction(async tx=>{
       // All registration and move operations are serialized to prevent duplicate names/phones.
-      await tx.$queryRaw`SELECT pg_advisory_xact_lock(1825, 2026)`
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(1825, 2026)`
       const records=await tx.$queryRaw<Row[]>`SELECT id,group_id,name,phone,role,student_id FROM public.university_group_members ORDER BY id`
       const current=findMember(records,student)
       const phone=normPhone(student.phone)

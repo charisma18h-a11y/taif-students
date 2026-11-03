@@ -54,7 +54,7 @@ export async function POST(req:NextRequest){
    if(!count)return err('الطالب غير موجود',404)
   }else if(action==='member-add'||action==='member-update'||action==='member-delete'){
    await db.$transaction(async tx=>{
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(1825,2026)`
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(1825,2026)`
     const members=await tx.$queryRaw<GroupRow[]>`SELECT id,group_id,name,phone,role,student_id FROM public.university_group_members`
     const id=action==='member-add'?null:parsedId(v.id)
     const old=id===null?null:members.find(r=>r.id===id)

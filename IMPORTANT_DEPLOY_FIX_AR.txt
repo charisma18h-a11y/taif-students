@@ -1,0 +1,11 @@
+إصلاح خطأ P2010 في المجموعات
+
+تم تعديل استعلام pg_advisory_xact_lock في ملفين:
+src/app/api/university-groups/route.ts
+src/app/api/admin/group-management/route.ts
+
+لرفع التعديل: ارفع ملفات النسخة الجديدة إلى نفس مستودع GitHub والفرع المرتبط بمشروع Vercel. ثم افتح Vercel > Deployments وتحقق أن أحدث Deployment يحمل Commit التعديل وحالته Ready ويخص Production. إذا لم يتغير النشر، أعد نشر أحدث Commit من Deployments باستخدام Redeploy مع تعطيل Use existing Build Cache عند توفر الخيار.
+
+بعد ذلك جرب انضمام طالب ثم تحديث قائمة المجموعات من متصفح آخر. لا تنفذ تعديلات قاعدة بيانات لهذا الخطأ.
+
+تنبيه: لم يتم اختبار التشغيل على قاعدة بياناتك الحية.

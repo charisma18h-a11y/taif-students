@@ -14,7 +14,6 @@ import ExamQuestions from '@/components/exam-questions'
 import UniversityGroups from '@/components/university-groups'
 import GroupAdminManager from '@/components/group-admin-manager'
 import StudentCoursePicker from '@/components/student-course-picker'
-import HomeBoard from '@/components/home-board'
 import ProfileEditor from '@/components/profile-editor'
 import CourseAdminManager from '@/components/course-admin-manager'
 import QuestionAdminManager from '@/components/question-admin-manager'
@@ -112,7 +111,7 @@ function AuthScreen({ onAuthed }: { onAuthed: (s: Student) => void }) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-4 bg-pattern">
-      <div className="w-full max-w-5xl"><HomeBoard /></div>
+      <a href="/board" className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-5 py-2.5 text-sm font-bold text-amber-200 transition hover:bg-amber-500/20">مجلس الإدارة · عرض الأعضاء</a>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -1012,6 +1011,7 @@ function StudentDashboard({
               <div><p className="text-sm text-amber-200/80 mb-1">لوحتك الجامعية</p><h2 className="text-2xl sm:text-3xl font-bold">هلا، {student.name} 👋</h2><p className="text-sm text-slate-300 mt-2">كل المطلوب منك في مكان واحد</p></div>
             </div>
             <div className="flex flex-wrap gap-2">
+              <a href="/board" className="profile-button inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium"><Shield className="size-4" />مجلس الإدارة</a>
               <Button className="profile-button" onClick={() => {setShowGroups(v => !v);setShowProfile(false);setShowStaffPanel(false)}}><BookOpen className="size-4 ml-2" />{showGroups ? 'العودة للمهام' : 'المهارات الجامعية · المجموعات'}</Button>
               {(staffPermissions?.can_publish||staffPermissions?.can_review_students)&&<Button className="profile-button" onClick={()=>{setShowStaffPanel(v=>!v);setShowGroups(false);setShowProfile(false)}}><Shield className="size-4 ml-2"/>لوحة الإدارة المفوّضة</Button>}
               <Button className="profile-button" onClick={() => {setShowProfile(v => !v);setShowGroups(false);setShowStaffPanel(false)}}><UserCircle2 className="size-4 ml-2" />{showProfile ? 'العودة للواجبات' : 'ملفي الشخصي'}</Button>
@@ -1020,7 +1020,7 @@ function StudentDashboard({
         </motion.section>
         {hasSelectedCourses === false && <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="تسجيل المواد إجباري"><div className="w-full max-w-3xl max-h-[92vh] overflow-y-auto"><StudentCoursePicker required onEnrollmentChange={(ok)=>{setHasSelectedCourses(ok);if(ok)window.dispatchEvent(new Event('student-courses-updated'))}}/></div></div>}
         {hasSelectedCourses === null && <div className="rounded-xl border border-amber-500/40 p-4 text-center text-sm text-amber-300">جاري التحقق من موادك وشُعبك... إذا استمرت الرسالة، حدّث الصفحة.</div>}
-        {!showGroups && !showProfile && !showStaffPanel && <HomeBoard />}
+
         {showProfile && <StudentCoursePicker onEnrollmentChange={(ok)=>{setHasSelectedCourses(ok);if(ok)window.dispatchEvent(new Event('student-courses-updated'))}}/>}
         {showStaffPanel ? <StaffPanel/> : showGroups ? <UniversityGroups /> : showProfile ? (
           <motion.section initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} className="grid gap-4 md:grid-cols-2">
