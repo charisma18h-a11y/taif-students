@@ -1,695 +1,162 @@
 {
-  "version": "2026-11-03-midnight-course-select",
-  "parts": [
-    {
-      "archive": "الجزء_1_صفحات_المنصة_والربط.zip",
-      "count": 59
-    },
-    {
-      "archive": "الجزء_2_التصميم_والإعدادات.zip",
-      "count": 77
-    }
+  "version": "2026-11-03-official-rosters",
+  "part1_file_count": 66,
+  "part2_file_count": 86,
+  "note": "Unzip both packages into the same repository root. Run SUPABASE_OFFICIAL_ROSTERS.sql before using roster import.",
+  "part1_paths": [
+    "src/app/api/admin/assignments/[id]/route.ts",
+    "src/app/api/admin/assignments/route.ts",
+    "src/app/api/admin/courses/route.ts",
+    "src/app/api/admin/group-management/route.ts",
+    "src/app/api/admin/login/route.ts",
+    "src/app/api/admin/logout/route.ts",
+    "src/app/api/admin/official-rosters/route.ts",
+    "src/app/api/admin/review-questions/route.ts",
+    "src/app/api/admin/staff/route.ts",
+    "src/app/api/admin/stats/route.ts",
+    "src/app/api/admin/students/[id]/route.ts",
+    "src/app/api/admin/students/route.ts",
+    "src/app/api/assignments/route.ts",
+    "src/app/api/assignments/view/route.ts",
+    "src/app/api/auth/check-phone/route.ts",
+    "src/app/api/auth/login/route.ts",
+    "src/app/api/auth/logout/route.ts",
+    "src/app/api/auth/register/route.ts",
+    "src/app/api/board/route.ts",
+    "src/app/api/course-catalog/route.ts",
+    "src/app/api/me/profile/route.ts",
+    "src/app/api/me/route.ts",
+    "src/app/api/me/university-id/route.ts",
+    "src/app/api/my-courses/route.ts",
+    "src/app/api/notifications/push/route.ts",
+    "src/app/api/portal-hub/route.ts",
+    "src/app/api/questions/route.ts",
+    "src/app/api/route.ts",
+    "src/app/api/staff/route.ts",
+    "src/app/api/university-groups/route.ts",
+    "src/app/board/page.tsx",
+    "src/app/courses/page.tsx",
+    "src/app/globals.css",
+    "src/app/layout.tsx",
+    "src/app/page.tsx",
+    "src/app/questions/page.tsx",
+    "src/components/course-admin-manager.tsx",
+    "src/components/course-select.tsx",
+    "src/components/exam-questions.tsx",
+    "src/components/group-admin-manager.tsx",
+    "src/components/home-board.tsx",
+    "src/components/official-roster-manager.tsx",
+    "src/components/portal-hub.tsx",
+    "src/components/profile-editor.tsx",
+    "src/components/push-notifications.tsx",
+    "src/components/question-admin-manager.tsx",
+    "src/components/staff-admin-manager.tsx",
+    "src/components/staff-panel.tsx",
+    "src/components/student-course-picker.tsx",
+    "src/components/university-groups.tsx",
+    "src/hooks/use-mobile.ts",
+    "src/hooks/use-toast.ts",
+    "src/lib/auth.ts",
+    "src/lib/course-store.ts",
+    "src/lib/course-subject.ts",
+    "src/lib/db.ts",
+    "src/lib/group-seed.ts",
+    "src/lib/original-groups-roster.ts",
+    "src/lib/physics-questions.ts",
+    "src/lib/push-send.ts",
+    "src/lib/question-search.ts",
+    "src/lib/question-store.ts",
+    "src/lib/roster-match.ts",
+    "src/lib/staff-store.ts",
+    "src/lib/university-group-store.ts",
+    "src/lib/utils.ts"
   ],
-  "files": [
-    {
-      "path": ".gitignore",
-      "part": 2,
-      "sha256": "43da641ad2c14338a3381b840eeb7a1adc31be8cdec9eaea43dcfc7429d3f9e3"
-    },
-    {
-      "path": "Caddyfile",
-      "part": 2,
-      "sha256": "89b7a9c04929989fb5014e1b5032ecd58df9491a3e3d09d69d62d740f29b0a7b"
-    },
-    {
-      "path": "HOW_TO_UPLOAD.txt",
-      "part": 2,
-      "sha256": "400d86ac3a66998a2baa7968b7c213ed787525b38bf7fa39275f1d2fadd77c6c"
-    },
-    {
-      "path": "IMPORTANT_DEPLOY_FIX_AR.txt",
-      "part": 2,
-      "sha256": "496e8e2a9ddb38120c1905a375e10a00153ea8d67ec408e503ce44c56faed7f3"
-    },
-    {
-      "path": "README.md",
-      "part": 2,
-      "sha256": "8596a116d7c0111a87ddf9558b307e4ceefa3f49ecead65be970c92203faab4d"
-    },
-    {
-      "path": "README_FINAL_AR.md",
-      "part": 2,
-      "sha256": "e5649b051bfac7919b6481a2d7a53e94f1788e00592834b3589b235edfd6a431"
-    },
-    {
-      "path": "SECURITY_AFTER_DEPLOY.sql",
-      "part": 2,
-      "sha256": "f05bac91aad71801fc9b1768be4cefc6909d9aaccd38dd34986b9f98598d0ef0"
-    },
-    {
-      "path": "START_HERE.txt",
-      "part": 2,
-      "sha256": "1760ff8a0a6604cbeed78460dc478e26702fa2c852c711300e8b3c604fa50ccb"
-    },
-    {
-      "path": "SUPABASE_ADD_UNIVERSITY_ID.sql",
-      "part": 2,
-      "sha256": "0f00803f1a1a8b624d41b206468888fd04d0d4671a41db1252ba8e95ba1fdb4e"
-    },
-    {
-      "path": "SUPABASE_NEW_FEATURES_SAFE.sql",
-      "part": 2,
-      "sha256": "02c120f2e1a65496dbc2900a8c5bb3ef24f5b4bd36a0055b8bade5ae032d18c2"
-    },
-    {
-      "path": "SUPABASE_README_AR.md",
-      "part": 2,
-      "sha256": "b2f4cd1065a6e647fde753f2fc92982a4e2705dd94930138ae6ce1b85d9e3f95"
-    },
-    {
-      "path": "UPDATE_MOBILE_MIDNIGHT_AR.md",
-      "part": 2,
-      "sha256": "a4a52a91030f6f871ebe82705787e734f3766fa202929c5fbdd4e6e947a28158"
-    },
-    {
-      "path": "UPLOAD_TWO_PARTS_AR.md",
-      "part": 2,
-      "sha256": "da6dfb3ab8fe9144fa37910d711ae616a74d8c52a61e116426ed338ba32c3258"
-    },
-    {
-      "path": "bun.lock",
-      "part": 2,
-      "sha256": "0c07c96bc51ade4a5c385e5b59e21e37530d24a389f927194606f8166aa7559d"
-    },
-    {
-      "path": "components.json",
-      "part": 2,
-      "sha256": "b8be06c49cf44d97a973a6f7ad38a6bc78ab04f78a2614d407738de9aa900983"
-    },
-    {
-      "path": "eslint.config.mjs",
-      "part": 2,
-      "sha256": "bd7adc9b35e2c723198ad87eb8166f3eae98517456773bf660343c04616a0f26"
-    },
-    {
-      "path": "next.config.ts",
-      "part": 2,
-      "sha256": "6b87a766fe1b6f3abd82cc8305e13f993bfcd619acd2e9f041c5ebef3ce2cc53"
-    },
-    {
-      "path": "package.json",
-      "part": 2,
-      "sha256": "11f696be3f91170a34556cc6c05f030760bf5df9b9bfe76ebb3008ecb811cac8"
-    },
-    {
-      "path": "postcss.config.mjs",
-      "part": 2,
-      "sha256": "141ef24ca27a99d08962210fdf20212d3435fdcfa21b46cd88b44d22f751dfae"
-    },
-    {
-      "path": "prisma/schema.prisma",
-      "part": 2,
-      "sha256": "4c2ba50179add38c8023d573de169a0b7410480afbe530f2213623b227bb1cfb"
-    },
-    {
-      "path": "public/logo.svg",
-      "part": 2,
-      "sha256": "8506450e8ef647695d218c4b3245ef573f9c6473783f372eef87fdba9bd47eac"
-    },
-    {
-      "path": "public/manifest.webmanifest",
-      "part": 2,
-      "sha256": "009309d9c6205123f7b2a5dde584f546a672ff706927ec516e93cdac883137c9"
-    },
-    {
-      "path": "public/pwa-icon-192.png",
-      "part": 2,
-      "sha256": "41083a65d66bc82aad7ca931848937168dc495bc4cf158816a41a5cc74d47bd6"
-    },
-    {
-      "path": "public/pwa-icon-512.png",
-      "part": 2,
-      "sha256": "bec9a9494d89cee7dcc73a03e3d407799e3bb5d64ee1a9ebfd4edeb2ee1c5a99"
-    },
-    {
-      "path": "public/robots.txt",
-      "part": 2,
-      "sha256": "a3d27b3ca5ce32341fa9f96f01169b521b1657c05d1860c45d1e53a6258e9e8b"
-    },
-    {
-      "path": "public/tu-logo-dark.png",
-      "part": 2,
-      "sha256": "a103e79e31ced13ea8d3ba43b7a826cb683897a880bf243bb8e81359145599b9"
-    },
-    {
-      "path": "public/tu-logo.png",
-      "part": 2,
-      "sha256": "a103e79e31ced13ea8d3ba43b7a826cb683897a880bf243bb8e81359145599b9"
-    },
-    {
-      "path": "src/app/api/admin/assignments/[id]/route.ts",
-      "part": 1,
-      "sha256": "b92f32a1fac7f875fee0d0925787bd074cffcc6a8374fb308366b0d736749a0f"
-    },
-    {
-      "path": "src/app/api/admin/assignments/route.ts",
-      "part": 1,
-      "sha256": "ff2dc281b804606b8afd192e7b5c9ae3feffb979b789c2d4f8a1b0fb095ffbdd"
-    },
-    {
-      "path": "src/app/api/admin/courses/route.ts",
-      "part": 1,
-      "sha256": "3dbe2ef70e2567e2f2565955f09376c604cabf1586c5d7de9c79e1a79c11689c"
-    },
-    {
-      "path": "src/app/api/admin/group-management/route.ts",
-      "part": 1,
-      "sha256": "db1de8ea9b459e55eb075e44e4e861a4c3ce42e7d93daf5908d05e3203cfca56"
-    },
-    {
-      "path": "src/app/api/admin/login/route.ts",
-      "part": 1,
-      "sha256": "3afd1e440c621522aeb7fe80dff5670df8f3fb92ebb1f6e9128754a5eac6cc9c"
-    },
-    {
-      "path": "src/app/api/admin/logout/route.ts",
-      "part": 1,
-      "sha256": "fa457e2e1c3dadde7294ae21b0908f37ba4ac379bd8a7fd9842dc90a90aed865"
-    },
-    {
-      "path": "src/app/api/admin/review-questions/route.ts",
-      "part": 1,
-      "sha256": "236116385aff782f1c9a2f50c7d56017fe920d7f487f9bc1ebd82e46520a815f"
-    },
-    {
-      "path": "src/app/api/admin/staff/route.ts",
-      "part": 1,
-      "sha256": "534e1df406e40b43bcb94170b90b1cba856815b11277e3ecb7b73d0e2f980caa"
-    },
-    {
-      "path": "src/app/api/admin/stats/route.ts",
-      "part": 1,
-      "sha256": "35626dd453f528e3c299e8de3152db3e16844dedcc91361924d56203246b235d"
-    },
-    {
-      "path": "src/app/api/admin/students/[id]/route.ts",
-      "part": 1,
-      "sha256": "d024407ed3ccb6ecb2a5d476e260287f3a75edebebd7057d7f5e661a8c3e55cd"
-    },
-    {
-      "path": "src/app/api/admin/students/route.ts",
-      "part": 1,
-      "sha256": "e886ad0bb8de271ec30765a7c4f46ac283982ca49fe86da9a38d7f29d1342f77"
-    },
-    {
-      "path": "src/app/api/assignments/route.ts",
-      "part": 1,
-      "sha256": "d39681b543739b7154dd34207a0a93a42d9155a4321349146414e19fd4dfd2d3"
-    },
-    {
-      "path": "src/app/api/assignments/view/route.ts",
-      "part": 1,
-      "sha256": "313454a4387e19e22c01ff3e53dd4e7d7410fd54f173a1ccc33cbb4f0761ce5c"
-    },
-    {
-      "path": "src/app/api/auth/check-phone/route.ts",
-      "part": 1,
-      "sha256": "b4bf2cb52b0a058949a7fe57790fc4dbd6db0ae1b2320ebc55987fb9cf15e4be"
-    },
-    {
-      "path": "src/app/api/auth/login/route.ts",
-      "part": 1,
-      "sha256": "3e624cc3cb0d87e9b7e85611853f08ef677bdba04d1ddb66d7e84afea8b35f48"
-    },
-    {
-      "path": "src/app/api/auth/logout/route.ts",
-      "part": 1,
-      "sha256": "97d2ba0593ca69cb1d5a284a626be1fcec4af990cae1f7026575f1465e665515"
-    },
-    {
-      "path": "src/app/api/auth/register/route.ts",
-      "part": 1,
-      "sha256": "c5f25caef6848c2df75269fecc381913ca3dd417cf9631535bec69ee0deac50e"
-    },
-    {
-      "path": "src/app/api/board/route.ts",
-      "part": 1,
-      "sha256": "0973f86cf22f0f333a6b80655b00d1dfd1689f98ae18ba179da346e04a003af5"
-    },
-    {
-      "path": "src/app/api/course-catalog/route.ts",
-      "part": 1,
-      "sha256": "49716a40270ae4f9825386f2b77fba93f75b93d286f974758660ee49333305d8"
-    },
-    {
-      "path": "src/app/api/me/profile/route.ts",
-      "part": 1,
-      "sha256": "27b931824d6c5baa8cae85d523064ce9192eb36d40213c19393dad7e16e8cfc4"
-    },
-    {
-      "path": "src/app/api/me/route.ts",
-      "part": 1,
-      "sha256": "54d657a912c8558540f9c4eb01351107448b7f31cec9b523b9d4dbde366872e4"
-    },
-    {
-      "path": "src/app/api/me/university-id/route.ts",
-      "part": 1,
-      "sha256": "69f2de5d45956ac4d2f0ea0a31f48778dc0d65415cff2eec9b3825ba8c22d96d"
-    },
-    {
-      "path": "src/app/api/my-courses/route.ts",
-      "part": 1,
-      "sha256": "ccd67795566c678a99147c0aed2d31f9f251036483fdd2d58aade061d44279ea"
-    },
-    {
-      "path": "src/app/api/portal-hub/route.ts",
-      "part": 1,
-      "sha256": "3f6342a2d2f75fc131502be45d0fa752ce4c66e6b42cf2e626084421654105ee"
-    },
-    {
-      "path": "src/app/api/questions/route.ts",
-      "part": 1,
-      "sha256": "d965f37b8e397de3c8b153a95e67b6c8954fa7545d364b232b2ce58948c2210c"
-    },
-    {
-      "path": "src/app/api/route.ts",
-      "part": 1,
-      "sha256": "bb3323e70b608cf916b285f8942d8efabb02166f84f9e5a8aa6fe9e417344bce"
-    },
-    {
-      "path": "src/app/api/staff/route.ts",
-      "part": 1,
-      "sha256": "03d01b0b851c08321745d7b898840c22c26b70df6aef08ff9f1d1f373a9762d9"
-    },
-    {
-      "path": "src/app/api/university-groups/route.ts",
-      "part": 1,
-      "sha256": "4672d370cbd6444fc9bb2d2c610e6899f2e89b168bf4b1bacef3db254944b578"
-    },
-    {
-      "path": "src/app/board/page.tsx",
-      "part": 1,
-      "sha256": "844cfe697d94c9568bf2671cb2fa59bbebd8f534addec59f6f3411fb6becf436"
-    },
-    {
-      "path": "src/app/courses/page.tsx",
-      "part": 1,
-      "sha256": "050494cbd070cb34d939fcd443e266771e4f28776fdcc20b3fd2eb6ad7d8db00"
-    },
-    {
-      "path": "src/app/globals.css",
-      "part": 1,
-      "sha256": "170afb1fd0b9b48921f080c01389922692e2e9b5d9a03714c69a8842077572d0"
-    },
-    {
-      "path": "src/app/layout.tsx",
-      "part": 1,
-      "sha256": "74b829d228505ae172dc8dc8dd2ca148722f00ed96ab5d6709b13628c3a0049b"
-    },
-    {
-      "path": "src/app/page.tsx",
-      "part": 1,
-      "sha256": "ec0d2011cb6a1bee4d6f15e120b26663e0bfdc07e7b53864ff571d67f7e5e786"
-    },
-    {
-      "path": "src/app/questions/page.tsx",
-      "part": 1,
-      "sha256": "d77b1ae1364a844aec7f17a0576bc77da73da58d52df389bb3d02ba975ba67c4"
-    },
-    {
-      "path": "src/components/course-admin-manager.tsx",
-      "part": 1,
-      "sha256": "2a1ec629c858cccbd6bf4dae08404c32573850e4c4044ae173651094677f1415"
-    },
-    {
-      "path": "src/components/course-select.tsx",
-      "part": 1,
-      "sha256": "f716cabd8726660e7c2849df30ed0f4db1c35e6ac3ab11b34cde6f826d8b7ad0"
-    },
-    {
-      "path": "src/components/exam-questions.tsx",
-      "part": 1,
-      "sha256": "24955a7406820e773936b79b74ab2844e5ccb48cbd80b6b6d896bcb55508c792"
-    },
-    {
-      "path": "src/components/group-admin-manager.tsx",
-      "part": 1,
-      "sha256": "801e00bc50ce93bb14c3500e960ca4ddcfc603661e971218dab3e35935387127"
-    },
-    {
-      "path": "src/components/home-board.tsx",
-      "part": 1,
-      "sha256": "07b2ff6ab289b1ff411c6da4e9499196625983583a512176342927a178726438"
-    },
-    {
-      "path": "src/components/portal-hub.tsx",
-      "part": 1,
-      "sha256": "5028eb7761b7161a71af4c7e88114453703df387b0f0ed6a287c953c39350c0e"
-    },
-    {
-      "path": "src/components/profile-editor.tsx",
-      "part": 1,
-      "sha256": "4a5c47ad328412bb56e2215fe56f508e95bbb76361ce26d8a5aeb82a085cc1ac"
-    },
-    {
-      "path": "src/components/question-admin-manager.tsx",
-      "part": 1,
-      "sha256": "d5c405f7cb4b26ca6b15315574a9c2c6e9cc534e69f60ea918ffabd34f817d9b"
-    },
-    {
-      "path": "src/components/staff-admin-manager.tsx",
-      "part": 1,
-      "sha256": "20480773fe9cdea911f1bb244bfea0687a2a9302562860d1305e5a6c373a99b8"
-    },
-    {
-      "path": "src/components/staff-panel.tsx",
-      "part": 1,
-      "sha256": "c2a914602f4079981d5bc6338f65de72bd0e99d4153853eb10ae0b7d569042c4"
-    },
-    {
-      "path": "src/components/student-course-picker.tsx",
-      "part": 1,
-      "sha256": "245aaae4bfbf166bc27838acce7e5c12f16416bae27c0e5222f73db1a0aae743"
-    },
-    {
-      "path": "src/components/ui/accordion.tsx",
-      "part": 2,
-      "sha256": "7251e973cc6896411e3348c1e9cd10bb359934b0e766055c9a3439b07b775edc"
-    },
-    {
-      "path": "src/components/ui/alert-dialog.tsx",
-      "part": 2,
-      "sha256": "59967c334f56dd44100e49b1fc18db428e7f15f5a28b9c2c4f9a3b7dcb4db4b7"
-    },
-    {
-      "path": "src/components/ui/alert.tsx",
-      "part": 2,
-      "sha256": "49d8311589b810b106aada8ef7b13f70b2b1f68cfce4e1458b7f31a191f420e9"
-    },
-    {
-      "path": "src/components/ui/aspect-ratio.tsx",
-      "part": 2,
-      "sha256": "6a75117416aa89200cf31e8d61643b428e812f479caea857c80004b26d893e79"
-    },
-    {
-      "path": "src/components/ui/avatar.tsx",
-      "part": 2,
-      "sha256": "e8672934f1c315f36cdae39380454ba8c2da62aca420dfb827d96693091419c4"
-    },
-    {
-      "path": "src/components/ui/badge.tsx",
-      "part": 2,
-      "sha256": "f41c11fc13e9a1f1b849349cb51b137ddd27de0a17c5339675c789d58f556cc4"
-    },
-    {
-      "path": "src/components/ui/breadcrumb.tsx",
-      "part": 2,
-      "sha256": "22f3f4c13ed1085c4131379bfccc6fb173a474f861636bc2736506820153aa08"
-    },
-    {
-      "path": "src/components/ui/button.tsx",
-      "part": 2,
-      "sha256": "82403231e33fd3d45b111e5e819df194cdfa7cef9a726770185724a60bd20932"
-    },
-    {
-      "path": "src/components/ui/calendar.tsx",
-      "part": 2,
-      "sha256": "fe832b1ba33bd42a41cd2b66c7e156f5f421af87f8ceb799eea5db48bab6d294"
-    },
-    {
-      "path": "src/components/ui/card.tsx",
-      "part": 2,
-      "sha256": "78cdb63dff3ec7ef074ada630ff20a5d8004768b6cbe24ed134a8bfba12bafbb"
-    },
-    {
-      "path": "src/components/ui/carousel.tsx",
-      "part": 2,
-      "sha256": "b7ea0dda3903d972c186f739e23da61f547bc83b5a0bf13b16856577846d5fc3"
-    },
-    {
-      "path": "src/components/ui/chart.tsx",
-      "part": 2,
-      "sha256": "670849399b33fecf7e46aa222c52f6a7c294faac079f5227f8c01c594822fd5d"
-    },
-    {
-      "path": "src/components/ui/checkbox.tsx",
-      "part": 2,
-      "sha256": "4c395ef15549e46068eb3b32a2a10fb5bfdb01f6834a3c0231a218a529015c83"
-    },
-    {
-      "path": "src/components/ui/collapsible.tsx",
-      "part": 2,
-      "sha256": "c2c74dc3e99482d00a57de673b56920860c2ff4b330373d783843f505dc11dae"
-    },
-    {
-      "path": "src/components/ui/command.tsx",
-      "part": 2,
-      "sha256": "4fb4f8f95dfbe884ae598661b80e541d62eacdfe2101beab58819ab58b96c2ea"
-    },
-    {
-      "path": "src/components/ui/context-menu.tsx",
-      "part": 2,
-      "sha256": "6573f8ed4232ae9801a3098a5cd4549b43a1e0ac1fd2c495e552a862d81fba22"
-    },
-    {
-      "path": "src/components/ui/dialog.tsx",
-      "part": 2,
-      "sha256": "491a87bfae8f28773624d353bf56b9288d0852413e814d508e0d086dc7b06edb"
-    },
-    {
-      "path": "src/components/ui/drawer.tsx",
-      "part": 2,
-      "sha256": "0c9464ed4f95207ff6ec0b8f433f550388ea0fe57fecd36bbe100b084ee46a3e"
-    },
-    {
-      "path": "src/components/ui/dropdown-menu.tsx",
-      "part": 2,
-      "sha256": "9b346378821ba06f9501e4571fd7678cd8819d6833f833daff72bec699565c06"
-    },
-    {
-      "path": "src/components/ui/form.tsx",
-      "part": 2,
-      "sha256": "b41b4b10f5e11b2acc1accb7b027eba0581b5cdd549d3ccef92e30d1f4efcf54"
-    },
-    {
-      "path": "src/components/ui/hover-card.tsx",
-      "part": 2,
-      "sha256": "031f6a309d87c8e42a2282fccc277dde75e373de8c93dad881582c9dc13e05d0"
-    },
-    {
-      "path": "src/components/ui/input-otp.tsx",
-      "part": 2,
-      "sha256": "35d561c352fde4e34fc3481839649728300c01cfadac62aa84c375d6d812f4de"
-    },
-    {
-      "path": "src/components/ui/input.tsx",
-      "part": 2,
-      "sha256": "6628e8fde207857b9ba08910d386eeea8213d7d745b4e0ae8b95332b52730db9"
-    },
-    {
-      "path": "src/components/ui/label.tsx",
-      "part": 2,
-      "sha256": "9ec42c8a57e82311118b794318409ee02b2cebfa49ba6cce8457cff6448cd471"
-    },
-    {
-      "path": "src/components/ui/menubar.tsx",
-      "part": 2,
-      "sha256": "d3c5b6060323b78aef1b32650e22d3d951d1b125404f76ffb967ed80446a3ddd"
-    },
-    {
-      "path": "src/components/ui/navigation-menu.tsx",
-      "part": 2,
-      "sha256": "d71f57fe0f365541fbf5d00196b0b78a461d8c4f38d35293e5754680d93b9245"
-    },
-    {
-      "path": "src/components/ui/pagination.tsx",
-      "part": 2,
-      "sha256": "53ffa0474d07dbfe1fb67f043a0ad7e7d24feecf950e65da8b929a90179c6ad4"
-    },
-    {
-      "path": "src/components/ui/popover.tsx",
-      "part": 2,
-      "sha256": "29a217781737bbf5c430859b3de46097a44ada81c4143c2d05543d2167de0ee1"
-    },
-    {
-      "path": "src/components/ui/progress.tsx",
-      "part": 2,
-      "sha256": "e7a89220fb49e18d6613956781cfd5eb38d5da36379e93f5fc90ccec127dc871"
-    },
-    {
-      "path": "src/components/ui/radio-group.tsx",
-      "part": 2,
-      "sha256": "b12ca5cef859dd75b274337234bae66e413b0f97845243254a1dedcb2d7a7237"
-    },
-    {
-      "path": "src/components/ui/resizable.tsx",
-      "part": 2,
-      "sha256": "41043c0f3dec3a41e163fcfbba4ed8138eeafcedd1aa40c007c3e195f34d37df"
-    },
-    {
-      "path": "src/components/ui/scroll-area.tsx",
-      "part": 2,
-      "sha256": "1c5d0b242d0513848f4bfa9b57ba7f438d9b1120617029941bfaa137196ecead"
-    },
-    {
-      "path": "src/components/ui/select.tsx",
-      "part": 2,
-      "sha256": "8795c9fac7c48d565ff6c47cbf4cca8bfefe25d8cb3d7e7aeba36855739a76ab"
-    },
-    {
-      "path": "src/components/ui/separator.tsx",
-      "part": 2,
-      "sha256": "e9dddbd8dbbc0eccd683306481b0f0bbc8e2b60ea97817416ebb9fe7fbbbdca8"
-    },
-    {
-      "path": "src/components/ui/sheet.tsx",
-      "part": 2,
-      "sha256": "3d6a560c635fd91094e43191ecf73b124ccb2537e6060f85d5d31fcf68150e74"
-    },
-    {
-      "path": "src/components/ui/sidebar.tsx",
-      "part": 2,
-      "sha256": "73561977bb06800b7d7700d844e4219b8dc4d14ac732c7a448e807005286d9f7"
-    },
-    {
-      "path": "src/components/ui/skeleton.tsx",
-      "part": 2,
-      "sha256": "f2aea81d8baf2b621945382aabac150e3db40f20d19ac1abea7aff805f1dc33c"
-    },
-    {
-      "path": "src/components/ui/slider.tsx",
-      "part": 2,
-      "sha256": "55140ef92c201c82d530dede076603611fbfb2cdc899e4d8459b58f6cbb2b235"
-    },
-    {
-      "path": "src/components/ui/sonner.tsx",
-      "part": 2,
-      "sha256": "958d33cd8a85293728acad21c1f3881da56b805bc11a3ec862d6aa355c152d90"
-    },
-    {
-      "path": "src/components/ui/switch.tsx",
-      "part": 2,
-      "sha256": "17f2390d98e8ce4d9e90155eac1918266914d6a9ada7c276b5d1c917cef0e969"
-    },
-    {
-      "path": "src/components/ui/table.tsx",
-      "part": 2,
-      "sha256": "7b8c7a952cf49e78aafe5f628c3bd90f7e01bd5602eb5d3650bef5727a8186d7"
-    },
-    {
-      "path": "src/components/ui/tabs.tsx",
-      "part": 2,
-      "sha256": "e8469e599381cf021ce751c27cca3d8cb06440a45665ca9c2ef2efb0acef1fd9"
-    },
-    {
-      "path": "src/components/ui/textarea.tsx",
-      "part": 2,
-      "sha256": "de4e9fb0fd8e8ed10ea2e475ffe202a922ffe77e3f3edb2c517b0781447ad1b4"
-    },
-    {
-      "path": "src/components/ui/toast.tsx",
-      "part": 2,
-      "sha256": "45d3d86ddb0b098a2bbbdca8458369d4a1fb046f77d9e106b690727ff6658afd"
-    },
-    {
-      "path": "src/components/ui/toaster.tsx",
-      "part": 2,
-      "sha256": "e4957974d6393d08f8237e6660a522e4f314610c6743b21c28f256efdb7fff7c"
-    },
-    {
-      "path": "src/components/ui/toggle-group.tsx",
-      "part": 2,
-      "sha256": "09eebce0dcbac76f860d4b6df5261c4f385f5ba233f88a0cd8dde91b1772abeb"
-    },
-    {
-      "path": "src/components/ui/toggle.tsx",
-      "part": 2,
-      "sha256": "b201563ea8cdef3680a3d9bf272cfc5918a5ab6e1079d7ff8d6273df7fce2849"
-    },
-    {
-      "path": "src/components/ui/tooltip.tsx",
-      "part": 2,
-      "sha256": "8d8a3645f547334b759341daf94a20b12a8ba17e8de4ad6e4e1c64b38842c1e3"
-    },
-    {
-      "path": "src/components/university-groups.tsx",
-      "part": 1,
-      "sha256": "cc4e1e1fbd2c1fbd0185b7281a0a3b51d621270d2c4e0487feabed7b1bc639dc"
-    },
-    {
-      "path": "src/hooks/use-mobile.ts",
-      "part": 1,
-      "sha256": "ad0936f84f1df79d3697bfbff9c18f8ad58431c1cbaf2359c6a853b0fcc9f28b"
-    },
-    {
-      "path": "src/hooks/use-toast.ts",
-      "part": 1,
-      "sha256": "12f8fcd1101acdd4a1cf6952d85aa8997d2a53aa9956d3cb77a85d441e54b1a9"
-    },
-    {
-      "path": "src/lib/auth.ts",
-      "part": 1,
-      "sha256": "a577a7a17cbfc2c16cd33b2c871e4675c3154e76509cfb54306a2b494837996b"
-    },
-    {
-      "path": "src/lib/course-store.ts",
-      "part": 1,
-      "sha256": "3c9b8fb0e4c76886e931a4d7b3547817c8dd14f863d834a85ac7a97c649065db"
-    },
-    {
-      "path": "src/lib/db.ts",
-      "part": 1,
-      "sha256": "ce5d51390121a452bc0a4d5208deaff71c583177773bcbbcd15b0af8ab48e2fc"
-    },
-    {
-      "path": "src/lib/group-seed.ts",
-      "part": 1,
-      "sha256": "8a1b357efa04ba703fdd8ea6f0bba357db02bd23f8af1d97314bfb7210b7a98e"
-    },
-    {
-      "path": "src/lib/original-groups-roster.ts",
-      "part": 1,
-      "sha256": "2373109d344600ce7483f489ff83c99dfab2befb96ad47442eb9b344dac3690c"
-    },
-    {
-      "path": "src/lib/physics-questions.ts",
-      "part": 1,
-      "sha256": "68099e197ca071584da98efb067fc90be1b92384911cdb92417e4e40bf6a3596"
-    },
-    {
-      "path": "src/lib/question-search.ts",
-      "part": 1,
-      "sha256": "ace05955cc9e9be64d569a3bb0f34c89ba34a32047e632c265218606f614995d"
-    },
-    {
-      "path": "src/lib/question-store.ts",
-      "part": 1,
-      "sha256": "577305d43613ceed5283bf3781ee62d5e56f4356b5f35f7f5e0f574c68b64a82"
-    },
-    {
-      "path": "src/lib/staff-store.ts",
-      "part": 1,
-      "sha256": "0b0812480e07adf06e76ac3bdba1de60ea6cda22e41d78230141f1cafa1b1e03"
-    },
-    {
-      "path": "src/lib/university-group-store.ts",
-      "part": 1,
-      "sha256": "63a2dfed378822b65a4fa024510929fc026d41be097f1fa322c7dd5a8abecfe4"
-    },
-    {
-      "path": "src/lib/utils.ts",
-      "part": 1,
-      "sha256": "7c8c3dfc0cdd370d44932828eb067ef771c8fe7996693221d5d4b90af6d54f2d"
-    },
-    {
-      "path": "tailwind.config.ts",
-      "part": 2,
-      "sha256": "ade682235e52f45b1c1dfc020f0bdb9f27b94fcff60afaa3272fae22fe5c0c54"
-    },
-    {
-      "path": "tsconfig.json",
-      "part": 2,
-      "sha256": "5627b3f441adc62af9e6420045fa0452d7c02bfcea664ec5758db46504631609"
-    }
+  "part2_paths": [
+    ".gitignore",
+    "Caddyfile",
+    "HOW_TO_UPLOAD.txt",
+    "IMPORTANT_DEPLOY_FIX_AR.txt",
+    "README.md",
+    "README_FINAL_AR.md",
+    "SECURITY_AFTER_DEPLOY.sql",
+    "START_HERE.txt",
+    "SUPABASE_ADD_UNIVERSITY_ID.sql",
+    "SUPABASE_NEW_FEATURES_SAFE.sql",
+    "SUPABASE_OFFICIAL_ROSTERS.sql",
+    "SUPABASE_PORTAL_FIX_PUSH.sql",
+    "SUPABASE_README_AR.md",
+    "UPDATE_MOBILE_MIDNIGHT_AR.md",
+    "UPLOAD_TWO_PARTS_AR.md",
+    "bun.lock",
+    "components.json",
+    "eslint.config.mjs",
+    "next.config.ts",
+    "package.json",
+    "postcss.config.mjs",
+    "prisma/schema.prisma",
+    "public/logo.svg",
+    "public/manifest.webmanifest",
+    "public/pwa-icon-192.png",
+    "public/pwa-icon-512.png",
+    "public/robots.txt",
+    "public/sw.js",
+    "public/tu-logo-dark.png",
+    "public/tu-logo.png",
+    "scripts/generate-push-keys.mjs",
+    "src/components/ui/accordion.tsx",
+    "src/components/ui/alert-dialog.tsx",
+    "src/components/ui/alert.tsx",
+    "src/components/ui/aspect-ratio.tsx",
+    "src/components/ui/avatar.tsx",
+    "src/components/ui/badge.tsx",
+    "src/components/ui/breadcrumb.tsx",
+    "src/components/ui/button.tsx",
+    "src/components/ui/calendar.tsx",
+    "src/components/ui/card.tsx",
+    "src/components/ui/carousel.tsx",
+    "src/components/ui/chart.tsx",
+    "src/components/ui/checkbox.tsx",
+    "src/components/ui/collapsible.tsx",
+    "src/components/ui/command.tsx",
+    "src/components/ui/context-menu.tsx",
+    "src/components/ui/dialog.tsx",
+    "src/components/ui/drawer.tsx",
+    "src/components/ui/dropdown-menu.tsx",
+    "src/components/ui/form.tsx",
+    "src/components/ui/hover-card.tsx",
+    "src/components/ui/input-otp.tsx",
+    "src/components/ui/input.tsx",
+    "src/components/ui/label.tsx",
+    "src/components/ui/menubar.tsx",
+    "src/components/ui/navigation-menu.tsx",
+    "src/components/ui/pagination.tsx",
+    "src/components/ui/popover.tsx",
+    "src/components/ui/progress.tsx",
+    "src/components/ui/radio-group.tsx",
+    "src/components/ui/resizable.tsx",
+    "src/components/ui/scroll-area.tsx",
+    "src/components/ui/select.tsx",
+    "src/components/ui/separator.tsx",
+    "src/components/ui/sheet.tsx",
+    "src/components/ui/sidebar.tsx",
+    "src/components/ui/skeleton.tsx",
+    "src/components/ui/slider.tsx",
+    "src/components/ui/sonner.tsx",
+    "src/components/ui/switch.tsx",
+    "src/components/ui/table.tsx",
+    "src/components/ui/tabs.tsx",
+    "src/components/ui/textarea.tsx",
+    "src/components/ui/toast.tsx",
+    "src/components/ui/toaster.tsx",
+    "src/components/ui/toggle-group.tsx",
+    "src/components/ui/toggle.tsx",
+    "src/components/ui/tooltip.tsx",
+    "tailwind.config.ts",
+    "tsconfig.json",
+    "اقرأني_إصلاح_الإشعارات_والنشر.md",
+    "تحديث_واجهة_المواد_وصلاحيات_المجلس.md",
+    "طريقة_إضافة_الكشوف_والشعب.md",
+    "كشف_بلاك_مقدمة_في_الرياضيات_1819.txt",
+    "FILE_SPLIT_MANIFEST.json"
   ]
 }
