@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cairo, Tajawal } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,10 +16,14 @@ const tajawal = Tajawal({
   display: "swap",
 });
 
+export const viewport: Viewport = { themeColor: "#071122", width: "device-width", initialScale: 1 };
+
 export const metadata: Metadata = {
   title: "وش علينا؟ | Wosh Alina",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "وش علينا" },
   description: "منصة المتابعة الدراسية - الطلاب يشوفون وش عليهم من اختبارات وواجبات - تسجيل بالاسم ورقم الجوال فقط",
-  keywords: ["أكواد", "طلاب", "تعليم", "واجبات", "Code Hub"],
+  keywords: ["جامعة", "طلاب", "تعليم", "واجبات", "وش علينا"],
   authors: [{ name: "Code Hub" }],
 };
 

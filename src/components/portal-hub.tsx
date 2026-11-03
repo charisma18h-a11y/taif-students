@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { CourseSelect, useCourseCatalog } from '@/components/course-select'
+import PushNotifications from '@/components/push-notifications'
 
 type Assignment = { id:string;title:string;description:string;type:string;subject:string|null;dueDate:string|null;createdAt:string }
 type Enrollment = { title:string; section:string }
@@ -46,6 +47,7 @@ export default function PortalHub({assignments,admin=false}:{assignments?:Assign
   const markNotice=async (id:string)=>{if(readNotices.includes(id))return;setReadNotices(v=>[...v,id]);const ok=await send({action:'readNotice',id});if(!ok)setReadNotices(v=>v.filter(x=>x!==id))}
   const toggle=async (id:string)=>{const was=completed.includes(id);setCompleted(v=>was?v.filter(x=>x!==id):[...v,id]);const ok=await send({action:'progress',assignmentId:id,completed:!was});if(!ok)setCompleted(v=>was?[...v,id]:v.filter(x=>x!==id))}
   return <section className="space-y-4" aria-label={admin?'إدارة المنصة الذكية':'مركز الطالب الذكي'}>
+    {!admin&&<PushNotifications/>}
     <div className="flex items-center justify-between gap-2 flex-wrap"><div><p className="text-xs uppercase tracking-widest text-cyan-300">WOSH ALINA • CAMPUS HUB</p><h2 className="text-xl font-extrabold mt-1">{admin?'مركز إدارة المنصة':'مركز المتابعة الذكي'}</h2><p className="text-sm text-muted-foreground">{admin?'إدارة الإعلانات والجدول الدراسي':'مهامك وتنبيهاتك وموادك في مكان واحد'}</p></div><Button size="sm" variant="outline" onClick={reload}><RefreshCw className="size-4 ml-2"/>تحديث</Button></div>
     {error&&<div role="alert" className="rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-200">{error}</div>}
     {!admin&&<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

@@ -3,6 +3,7 @@ import { createHash, timingSafeEqual } from 'node:crypto'
 import { getStudentSession } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { initialize,readBoard,boardPublic } from '@/lib/university-group-store'
+import { getEnrollments } from '@/lib/course-store'
 
 export const dynamic = 'force-dynamic'
 
@@ -60,6 +61,8 @@ export async function POST(req: NextRequest) {
   try {
     const student=await getStudentSession()
     if (!student) return NextResponse.json({error:'سجل دخولك أولاً'},{status:401})
+    const enrolled = await getEnrollments(student.id)
+    if (!enrolled.length) return NextResponse.json({error:'سجّل مادة وشعبة واحدة على الأقل قبل الانضمام للمجموعة'},{status:403})
     const input: unknown=await req.json().catch(()=>null)
     if(!input || typeof input!=='object') return NextResponse.json({error:'بيانات غير صالحة'},{status:400})
     const {groupId,password}=input as {groupId?:unknown;password?:unknown}
@@ -68,7 +71,7 @@ export async function POST(req: NextRequest) {
     await initialize()
     const result=await db.$transaction(async tx=>{
       // All registration and move operations are serialized to prevent duplicate names/phones.
-      await tx.$queryRaw`SELECT pg_advisory_xact_lock(1825, 2026)`
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(1825, 2026)`
       const records=await tx.$queryRaw<Row[]>`SELECT id,group_id,name,phone,role,student_id FROM public.university_group_members ORDER BY id`
       const current=findMember(records,student)
       const phone=normPhone(student.phone)
