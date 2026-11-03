@@ -18,8 +18,10 @@ const tajawal = Tajawal({
 
 export const metadata: Metadata = {
   title: "وش علينا؟ | Wosh Alina",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "وش علينا" },
   description: "منصة المتابعة الدراسية - الطلاب يشوفون وش عليهم من اختبارات وواجبات - تسجيل بالاسم ورقم الجوال فقط",
-  keywords: ["أكواد", "طلاب", "تعليم", "واجبات", "Code Hub"],
+  keywords: ["جامعة", "طلاب", "تعليم", "واجبات", "وش علينا"],
   authors: [{ name: "Code Hub" }],
 };
 

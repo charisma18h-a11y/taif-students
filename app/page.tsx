@@ -6,7 +6,7 @@ import {
   Code2, Users, Eye, LogOut, Shield, Plus, Pencil, Trash2,
   CheckCircle2, Circle, Clock, Search, BookOpen, Calendar,
   TrendingUp, Copy, Check, ChevronLeft, User, Phone, Lock,
-  LayoutDashboard, FileText, X, Save, Eye as EyeIcon, EyeOff,
+  LayoutDashboard, FileText, X, Save, Eye as EyeIcon, EyeOff, Bell,
   Sparkles, GraduationCap, UserPlus, LogIn, UserCircle2, ArrowRight
 } from 'lucide-react'
 import Image from 'next/image'
@@ -19,6 +19,7 @@ import CourseAdminManager from '@/components/course-admin-manager'
 import QuestionAdminManager from '@/components/question-admin-manager'
 import StaffAdminManager from '@/components/staff-admin-manager'
 import StaffPanel from '@/components/staff-panel'
+import PortalHub from '@/components/portal-hub'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -1011,6 +1012,7 @@ function StudentDashboard({
               <div><p className="text-sm text-amber-200/80 mb-1">لوحتك الجامعية</p><h2 className="text-2xl sm:text-3xl font-bold">هلا، {student.name} 👋</h2><p className="text-sm text-slate-300 mt-2">كل المطلوب منك في مكان واحد</p></div>
             </div>
             <div className="flex flex-wrap gap-2">
+              <a href="/courses" className="profile-button inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium"><BookOpen className="size-4" />موادي</a>
               <a href="/board" className="profile-button inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium"><Shield className="size-4" />مجلس الإدارة</a>
               <Button className="profile-button" onClick={() => {setShowGroups(v => !v);setShowProfile(false);setShowStaffPanel(false)}}><BookOpen className="size-4 ml-2" />{showGroups ? 'العودة للمهام' : 'المهارات الجامعية · المجموعات'}</Button>
               {(staffPermissions?.can_publish||staffPermissions?.can_review_students)&&<Button className="profile-button" onClick={()=>{setShowStaffPanel(v=>!v);setShowGroups(false);setShowProfile(false)}}><Shield className="size-4 ml-2"/>لوحة الإدارة المفوّضة</Button>}
@@ -1029,6 +1031,7 @@ function StudentDashboard({
             <Card className="p-6"><h3 className="text-xl font-bold mb-5">إنجازك الدراسي</h3><div className="grid grid-cols-2 gap-3"><div className="profile-metric"><p className="text-3xl font-bold text-primary">{assignments.length}</p><p className="text-sm text-muted-foreground">إجمالي المطلوب</p></div><div className="profile-metric"><p className="text-3xl font-bold text-primary">{viewedIds.length}</p><p className="text-sm text-muted-foreground">تمت مشاهدتها</p></div></div><div className="mt-6"><div className="flex justify-between text-sm mb-2"><span>نسبة الاطلاع</span><span>{assignments.length ? Math.round(viewedIds.length / assignments.length * 100) : 0}%</span></div><div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary transition-all" style={{width:`${assignments.length ? Math.min(100,Math.round(viewedIds.length / assignments.length * 100)) : 0}%`}} /></div><p className="text-xs text-muted-foreground mt-3">الاطلاع لا يعني تسليم الواجب؛ هذه النسبة تحسب العناصر التي فتحتها فقط.</p></div></Card>
           </motion.section>
         ) : (<>
+        <PortalHub assignments={assignments} />
         <ExamQuestions />
         <WeeklyTasks assignments={assignments} />
         {/* بطاقات إحصائية */}
@@ -1319,7 +1322,7 @@ function AssignmentFormModal({
 
 // ===== لوحة الأدمن =====
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
-  const [tab, setTab] = useState<'overview' | 'assignments' | 'students' | 'group-admin' | 'courses' | 'question-admin' | 'staff-admin'>('overview')
+  const [tab, setTab] = useState<'overview' | 'assignments' | 'students' | 'group-admin' | 'courses' | 'question-admin' | 'staff-admin' | 'portal-hub'>('overview')
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
@@ -1425,7 +1428,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       <main className="container mx-auto px-4 py-6 flex-1">
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-          <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 w-full mb-6 h-auto min-h-12">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 w-full mb-6 h-auto min-h-12">
             <TabsTrigger value="overview" className="gap-1">
               <LayoutDashboard className="size-4" />
               نظرة عامة
@@ -1444,12 +1447,14 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             </TabsTrigger>
             <TabsTrigger value="staff-admin" className="gap-1"><Shield className="size-4" />صلاحيات الإدارة</TabsTrigger>
             <TabsTrigger value="question-admin" className="gap-1"><FileText className="size-4" />أسئلة المراجعة</TabsTrigger>
+            <TabsTrigger value="portal-hub" className="gap-1"><Bell className="size-4" />الإعلانات والجدول</TabsTrigger>
             <TabsTrigger value="group-admin" className="gap-1">
               <Shield className="size-4" />
               المجموعات والمجلس
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="portal-hub"><PortalHub admin /></TabsContent>
           <TabsContent value="staff-admin"><StaffAdminManager /></TabsContent>
           <TabsContent value="question-admin"><QuestionAdminManager /></TabsContent>
           <TabsContent value="group-admin"><GroupAdminManager /></TabsContent>
