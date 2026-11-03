@@ -95,10 +95,6 @@ export default function UniversityGroups() {
       </div>
     </div>
 
-    {board.length>0 && <div className="ug-board" aria-label="مجلس الإدارة">
-      <div className="ug-board-heading"><Crown size={21}/><div><h3>مجلس الإدارة</h3><p>الأعضاء والمناصب المعتمدة من إدارة المنصة</p></div></div>
-      <div className="ug-board-grid">{board.map(b=><article className="ug-board-person" key={b.id}><div className="ug-board-badge"><ShieldCheck size={17}/></div><small>{b.title}</small><strong>{b.name}</strong>{b.description&&<p>{b.description}</p>}</article>)}</div>
-    </div>}
     <div className="ug-toolbar">
       <div className="ug-search"><Search size={18}/><input aria-label="البحث عن مجموعة أو طالب" value={search} onChange={e=>setSearch(e.target.value)} placeholder="ابحث باسم طالب أو مجموعة..."/></div>
       <button className="ug-refresh" type="button" onClick={()=>void refresh()} disabled={loading}><RefreshCw size={17}/> تحديث القوائم</button>
