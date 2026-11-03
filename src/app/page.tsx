@@ -16,6 +16,7 @@ import GroupAdminManager from '@/components/group-admin-manager'
 import StudentCoursePicker from '@/components/student-course-picker'
 import ProfileEditor from '@/components/profile-editor'
 import CourseAdminManager from '@/components/course-admin-manager'
+import OfficialRosterManager from '@/components/official-roster-manager'
 import QuestionAdminManager from '@/components/question-admin-manager'
 import StaffAdminManager from '@/components/staff-admin-manager'
 import StaffPanel from '@/components/staff-panel'
@@ -691,17 +692,6 @@ function AdminLoginButton() {
 function StudentHeader({
   student, onLogout,
 }: { student: Student; onLogout: () => void }) {
-  const [courses, setCourses] = useState<{title:string;section:string}[]>([])
-  useEffect(() => {
-    let active = true
-    const reload = () => fetch('/api/my-courses', {cache:'no-store'})
-      .then(r => r.ok ? r.json() : null)
-      .then(d => {if(active && Array.isArray(d?.enrollments)) setCourses(d.enrollments)})
-      .catch(() => {})
-    void reload()
-    window.addEventListener('student-courses-updated', reload)
-    return () => {active = false;window.removeEventListener('student-courses-updated', reload)}
-  }, [])
   return (
     <header className="sticky top-0 z-40 glass border-b border-sky-400/15" aria-label="رأس منصة وش علينا">
       <div className="mx-auto max-w-7xl px-3 sm:px-6 h-[68px] flex items-center justify-between gap-2 sm:gap-4">
@@ -714,9 +704,6 @@ function StudentHeader({
           </div>
         </div>
         <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-          <a href="/courses" className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-sky-400/25 bg-sky-400/10 px-3 text-xs font-bold text-sky-100 hover:bg-sky-400/20" aria-label={`فتح موادي، ${courses.length} مادة`}>
-            <BookOpen className="size-4 text-sky-300"/><span>موادي</span><span className="rounded-md bg-sky-400/20 px-1.5 tabular-nums">{courses.length}</span>
-          </a>
           <Button variant="ghost" size="sm" onClick={onLogout} className="h-10 px-2 sm:px-3 shrink-0 hover:bg-rose-500/10 hover:text-rose-200" aria-label="تسجيل الخروج">
             <LogOut className="size-4 sm:ml-1" />
             <span className="hidden sm:inline">خروج</span>
@@ -1327,7 +1314,7 @@ function AssignmentFormModal({
 
 // ===== لوحة الأدمن =====
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
-  const [tab, setTab] = useState<'overview' | 'assignments' | 'students' | 'group-admin' | 'courses' | 'question-admin' | 'staff-admin' | 'portal-hub'>('overview')
+  const [tab, setTab] = useState<'overview' | 'assignments' | 'students' | 'group-admin' | 'courses' | 'question-admin' | 'staff-admin' | 'portal-hub' | 'official-rosters'>('overview')
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
@@ -1434,7 +1421,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       <main className="container mx-auto px-4 py-6 flex-1">
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-          <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 w-full mb-6 h-auto min-h-12">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 w-full mb-6 h-auto min-h-12">
             <TabsTrigger value="overview" className="gap-1">
               <LayoutDashboard className="size-4" />
               نظرة عامة
@@ -1451,6 +1438,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
               <BookOpen className="size-4" />
               المواد والشُّعب
             </TabsTrigger>
+            <TabsTrigger value="official-rosters" className="gap-1"><CheckCircle2 className="size-4" />مطابقة الكشوف</TabsTrigger>
             <TabsTrigger value="staff-admin" className="gap-1"><Shield className="size-4" />صلاحيات الإدارة</TabsTrigger>
             <TabsTrigger value="question-admin" className="gap-1"><FileText className="size-4" />أسئلة المراجعة</TabsTrigger>
             <TabsTrigger value="portal-hub" className="gap-1"><Bell className="size-4" />الإعلانات والجدول</TabsTrigger>
@@ -1460,6 +1448,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="official-rosters"><OfficialRosterManager /></TabsContent>
           <TabsContent value="portal-hub"><PortalHub admin /></TabsContent>
           <TabsContent value="staff-admin"><StaffAdminManager /></TabsContent>
           <TabsContent value="question-admin"><QuestionAdminManager /></TabsContent>
