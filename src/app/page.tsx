@@ -20,8 +20,6 @@ import OfficialRosterManager from '@/components/official-roster-manager'
 import QuestionAdminManager from '@/components/question-admin-manager'
 import StaffAdminManager from '@/components/staff-admin-manager'
 import StaffPanel from '@/components/staff-panel'
-import PortalHub from '@/components/portal-hub'
-import { CourseSelect, useCourseCatalog } from '@/components/course-select'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -962,8 +960,8 @@ function StudentDashboard({
     }
   }, [toast])
 
-  // تحديث الواجبات بمجرد حفظ المواد، وعدم عرض واجبات مادة قبل الانضمام إليها.
-  useEffect(() => { if (student.universityId && hasSelectedCourses === true) load() }, [load, student.universityId, hasSelectedCourses])
+  // الواجبات العامة متاحة لكل حساب طالب، بغض النظر عن تسجيل المواد والشعب.
+  useEffect(() => { if (student.universityId) load() }, [load, student.universityId, hasSelectedCourses])
 
   const recordView = async (assignmentId: string) => {
     try {
@@ -1006,20 +1004,16 @@ function StudentDashboard({
             <div className="min-w-0">
               <p className="text-[11px] sm:text-sm font-semibold text-sky-300 mb-1">لوحتك الجامعية • وش علينا؟</p>
               <h2 className="text-xl sm:text-3xl font-extrabold leading-tight break-words">هلا، {student.name} 👋</h2>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1.5">واجباتك، مجموعاتك، وإعلاناتك في مكان واحد</p>
+              <p className="text-xs sm:text-sm text-slate-300 mt-1.5">واجباتك واختباراتك ومجموعاتك في مكان واحد</p>
             </div>
           </div>
         </motion.section>
-        <nav aria-label="روابط منصة وش علينا" className="student-quick-nav grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-          <a href="/courses" className="quick-nav-link"><BookOpen className="size-5 shrink-0 text-sky-300"/><span>موادي الدراسية</span></a>
+        <nav aria-label="روابط منصة وش علينا" className="student-quick-nav grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
           <button type="button" className="quick-nav-link" onClick={() => {setShowGroups(v => !v);setShowProfile(false);setShowStaffPanel(false)}}><Users className="size-5 shrink-0 text-sky-300"/><span>{showGroups ? 'العودة للمهام' : 'المجموعات'}</span></button>
           <button type="button" className="quick-nav-link" onClick={() => {setShowProfile(v => !v);setShowGroups(false);setShowStaffPanel(false)}}><UserCircle2 className="size-5 shrink-0 text-sky-300"/><span>{showProfile ? 'العودة للمهام' : 'ملفي الشخصي'}</span></button>
           <a href="/board" className="quick-nav-link"><Shield className="size-5 shrink-0 text-sky-300"/><span>مجلس الإدارة</span></a>
-          {(staffPermissions?.can_publish||staffPermissions?.can_review_students)&&<button type="button" className="quick-nav-link lg:col-span-4" onClick={()=>{setShowStaffPanel(v=>!v);setShowGroups(false);setShowProfile(false)}}><Shield className="size-5 shrink-0 text-sky-300"/><span>لوحة الإدارة المفوّضة</span></button>}
+          {(staffPermissions?.can_publish||staffPermissions?.can_review_students)&&<button type="button" className="quick-nav-link lg:col-span-3" onClick={()=>{setShowStaffPanel(v=>!v);setShowGroups(false);setShowProfile(false)}}><Shield className="size-5 shrink-0 text-sky-300"/><span>لوحة الإدارة المفوّضة</span></button>}
         </nav>
-        {hasSelectedCourses === false && <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="تسجيل المواد إجباري"><div className="w-full max-w-3xl max-h-[92vh] overflow-y-auto"><StudentCoursePicker required onEnrollmentChange={(ok)=>{setHasSelectedCourses(ok);if(ok)window.dispatchEvent(new Event('student-courses-updated'))}}/></div></div>}
-        {hasSelectedCourses === null && <div className="rounded-xl border border-amber-500/40 p-4 text-center text-sm text-amber-300">جاري التحقق من موادك وشُعبك... إذا استمرت الرسالة، حدّث الصفحة.</div>}
-
         {showProfile && <StudentCoursePicker onEnrollmentChange={(ok)=>{setHasSelectedCourses(ok);if(ok)window.dispatchEvent(new Event('student-courses-updated'))}}/>}
         {showStaffPanel ? <StaffPanel/> : showGroups ? <UniversityGroups /> : showProfile ? (
           <motion.section initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} className="grid gap-4 md:grid-cols-2">
@@ -1028,9 +1022,7 @@ function StudentDashboard({
             <Card className="p-6"><h3 className="text-xl font-bold mb-5">إنجازك الدراسي</h3><div className="grid grid-cols-2 gap-3"><div className="profile-metric"><p className="text-3xl font-bold text-primary">{assignments.length}</p><p className="text-sm text-muted-foreground">إجمالي المطلوب</p></div><div className="profile-metric"><p className="text-3xl font-bold text-primary">{viewedIds.length}</p><p className="text-sm text-muted-foreground">تمت مشاهدتها</p></div></div><div className="mt-6"><div className="flex justify-between text-sm mb-2"><span>نسبة الاطلاع</span><span>{assignments.length ? Math.round(viewedIds.length / assignments.length * 100) : 0}%</span></div><div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary transition-all" style={{width:`${assignments.length ? Math.min(100,Math.round(viewedIds.length / assignments.length * 100)) : 0}%`}} /></div><p className="text-xs text-muted-foreground mt-3">الاطلاع لا يعني تسليم الواجب؛ هذه النسبة تحسب العناصر التي فتحتها فقط.</p></div></Card>
           </motion.section>
         ) : (<>
-        <PortalHub assignments={assignments} />
         <ExamQuestions />
-        <WeeklyTasks assignments={assignments} />
         {/* بطاقات إحصائية */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <Card className="p-4">
@@ -1159,8 +1151,6 @@ function AssignmentFormModal({
   const [description, setDescription] = useState(assignment?.description || '')
   const [type, setType] = useState(assignment?.type || 'واجب')
   const [details, setDetails] = useState(assignment?.details || '')
-  const [subject, setSubject] = useState(assignment?.subject || '')
-  const {courses: availableCourses, loading: coursesLoading, error: coursesError, reload: reloadCourses} = useCourseCatalog()
   const [dueDate, setDueDate] = useState(
     assignment?.dueDate ? new Date(assignment.dueDate).toISOString().slice(0, 10) : ''
   )
@@ -1173,7 +1163,7 @@ function AssignmentFormModal({
     setSaving(true)
     try {
       const payload = {
-        title, description, type, details: details || null, subject: subject || null,
+        title, description, type, details: details || null, subject: null,
         dueDate: dueDate || null, published,
       }
       const url = assignment
@@ -1252,10 +1242,7 @@ function AssignmentFormModal({
                   ))}
                 </div>
               </div>
-              <div className="space-y-2">
-                <CourseSelect courses={availableCourses} loading={coursesLoading} error={coursesError} onRetry={reloadCourses} label="اختر المادة المطلوبة" allowGeneral value={subject} onChange={setSubject}/>
-                <p className="text-xs text-muted-foreground">اختر المادة من القائمة بدل كتابتها. بدون اختيار، يظهر المطلوب لجميع الطلاب؛ مع الاختيار يصل فقط للمسجلين في المادة.</p>
-              </div>
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm">🌐 النشر إلى: <strong>جميع الطلاب</strong> — بدون تحديد مادة أو شعبة.</div>
               <div className="space-y-2">
                 <Label>الوصف *</Label>
                 <Textarea
@@ -1292,7 +1279,7 @@ function AssignmentFormModal({
                 <Switch checked={published} onCheckedChange={setPublished} />
               </div>
               <div className="flex gap-2 pt-2">
-                <Button type="submit" disabled={saving||coursesLoading||!!coursesError} className="flex-1 h-11">
+                <Button type="submit" disabled={saving} className="flex-1 h-11">
                   {saving ? 'جاري الحفظ...' : (
                     <>
                       <Save className="size-4 ml-1" />
@@ -1314,7 +1301,7 @@ function AssignmentFormModal({
 
 // ===== لوحة الأدمن =====
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
-  const [tab, setTab] = useState<'overview' | 'assignments' | 'students' | 'group-admin' | 'courses' | 'question-admin' | 'staff-admin' | 'portal-hub' | 'official-rosters'>('overview')
+  const [tab, setTab] = useState<'overview' | 'assignments' | 'students' | 'group-admin' | 'courses' | 'question-admin' | 'staff-admin' | 'official-rosters'>('overview')
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
@@ -1421,7 +1408,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 
       <main className="container mx-auto px-4 py-6 flex-1">
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-          <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 w-full mb-6 h-auto min-h-12">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 w-full mb-6 h-auto min-h-12">
             <TabsTrigger value="overview" className="gap-1">
               <LayoutDashboard className="size-4" />
               نظرة عامة
@@ -1441,7 +1428,6 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             <TabsTrigger value="official-rosters" className="gap-1"><CheckCircle2 className="size-4" />مطابقة الكشوف</TabsTrigger>
             <TabsTrigger value="staff-admin" className="gap-1"><Shield className="size-4" />صلاحيات الإدارة</TabsTrigger>
             <TabsTrigger value="question-admin" className="gap-1"><FileText className="size-4" />أسئلة المراجعة</TabsTrigger>
-            <TabsTrigger value="portal-hub" className="gap-1"><Bell className="size-4" />الإعلانات والجدول</TabsTrigger>
             <TabsTrigger value="group-admin" className="gap-1">
               <Shield className="size-4" />
               المجموعات والمجلس
@@ -1449,7 +1435,6 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           </TabsList>
 
           <TabsContent value="official-rosters"><OfficialRosterManager /></TabsContent>
-          <TabsContent value="portal-hub"><PortalHub admin /></TabsContent>
           <TabsContent value="staff-admin"><StaffAdminManager /></TabsContent>
           <TabsContent value="question-admin"><QuestionAdminManager /></TabsContent>
           <TabsContent value="group-admin"><GroupAdminManager /></TabsContent>
