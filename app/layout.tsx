@@ -16,7 +16,7 @@ const tajawal = Tajawal({
   display: "swap",
 });
 
-export const viewport: Viewport = { themeColor: "#071122", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#101821", width: "device-width", initialScale: 1 };
 
 export const metadata: Metadata = {
   title: "وش علينا؟ | Wosh Alina",

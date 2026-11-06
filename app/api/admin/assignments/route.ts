@@ -2,9 +2,6 @@ export const maxDuration = 30
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getAdminSession } from '@/lib/auth'
-import { resolveCourseSubject } from '@/lib/course-subject'
-import { after } from 'next/server'
-import { notifyStudents } from '@/lib/push-send'
 
 // التحقق من جلسة الأدمن
 async function requireAdmin() {
@@ -46,22 +43,18 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    let resolvedSubject: string | null
-    try { resolvedSubject = await resolveCourseSubject(subject) }
-    catch(e) { return NextResponse.json({error:(e as Error).message},{status:400}) }
     const assignment = await db.assignment.create({
       data: {
         title: title.trim(),
         description: description.trim(),
         type: type?.trim() || 'واجب',
         details: details?.trim() || null,
-        subject: resolvedSubject,
+        subject: null,
         dueDate: dueDate ? new Date(dueDate) : null,
         published: published !== undefined ? Boolean(published) : true,
       },
     })
 
-    if (assignment.published) after(() => notifyStudents({title:`${assignment.type} جديد: ${assignment.title}`,body:assignment.description.slice(0,160),subject:resolvedSubject,url:'/'}))
     return NextResponse.json({ success: true, assignment })
   } catch (e) {
     console.error('admin assignment POST error', e)

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getStudentSession } from '@/lib/auth'
-import {getEnrollments} from '@/lib/course-store'
 
 // تسجيل مشاهدة الطالب لكود معين (للإحصائيات)
 export async function POST(req: NextRequest) {
@@ -22,8 +21,7 @@ export async function POST(req: NextRequest) {
     }
 
     const target = await db.assignment.findUnique({where:{id:assignmentId}})
-    const enrolled = await getEnrollments(student.id)
-    if (!target?.published || !enrolled.length || (target.subject?.trim() && !enrolled.some(e=>e.title.trim()===target.subject?.trim()))) return NextResponse.json({error:'المطلوب غير متاح لك'},{status:403})
+    if (!target?.published) return NextResponse.json({error:'المطلوب غير متاح لك'},{status:403})
 
     // استخدم upsert بسبب unique constraint على (studentId, assignmentId)
     await db.view.upsert({

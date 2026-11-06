@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getStudentSession } from '@/lib/auth'
-import {getEnrollments} from '@/lib/course-store'
 
 // جلب الأكواد المنشورة للطالب
 export async function GET() {
@@ -15,11 +14,9 @@ export async function GET() {
       return NextResponse.json({ error: 'أكمل الرقم الجامعي في ملفك أولاً' }, { status: 403 })
     }
 
-    const enrolled = await getEnrollments(student.id)
-    if (!enrolled.length) return NextResponse.json({error:'يجب اختيار مادة وشعبة قبل عرض المطلوب'},{status:403})
-    const enrolledTitles = enrolled.map(e => e.title.trim())
+    // جميع الواجبات والاختبارات المنشورة متاحة لكل طالب لديه حساب، دون شرط مادة أو شعبة.
     const assignments = await db.assignment.findMany({
-      where: { published: true, OR: [{subject: null},{subject: ''}, ...(enrolledTitles.length ? [{subject: {in: enrolledTitles}}] : [])] },
+      where: { published: true },
       orderBy: { createdAt: 'desc' },
     })
 

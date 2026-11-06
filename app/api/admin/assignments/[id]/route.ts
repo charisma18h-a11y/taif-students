@@ -1,7 +1,7 @@
+export const maxDuration = 30
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getAdminSession } from '@/lib/auth'
-import {getCatalog} from '@/lib/course-store'
 
 async function requireAdmin() {
   return await getAdminSession()
@@ -21,16 +21,12 @@ export async function PUT(
     const body = await req.json()
     const { title, description, type, details, subject, dueDate, published } = body
 
-    if (typeof subject === 'string' && subject.trim()) {
-      const catalog=await getCatalog()
-      if (!catalog.some(c=>c.title===subject.trim())) return NextResponse.json({error:'اختر اسم مادة موجودة في قائمة المواد'},{status:400})
-    }
     const data: Record<string, unknown> = {}
     if (title !== undefined) data.title = title.trim()
     if (description !== undefined) data.description = description.trim()
     if (type !== undefined) data.type = type.trim()
     if (details !== undefined) data.details = details?.trim() || null
-    if (subject !== undefined) data.subject = subject?.trim() || null
+    data.subject = null
     if (dueDate !== undefined) data.dueDate = dueDate ? new Date(dueDate) : null
     if (published !== undefined) data.published = Boolean(published)
 

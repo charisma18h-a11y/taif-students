@@ -1,7 +1,9 @@
+export const maxDuration = 30
 import { NextRequest,NextResponse } from 'next/server'
 import {getAdminSession} from '@/lib/auth'
 import {db} from '@/lib/db'
 import {reviewState} from '@/lib/question-store'
+import { resolveCourseSubject } from '@/lib/course-subject'
 export const dynamic='force-dynamic'
 const deny=()=>NextResponse.json({error:'دخول الأدمن مطلوب'},{status:401})
 export async function GET(){
@@ -21,7 +23,10 @@ export async function POST(req:NextRequest){
   }else if(b.action==='add'){
     const question=String(b.question||'').trim(),answer=String(b.answer||'').trim()
     if(question.length<4||question.length>2000||answer.length<1||answer.length>2000)return NextResponse.json({error:'تحقق من نص السؤال والإجابة'},{status:400})
-    await db.$executeRaw`INSERT INTO public.portal_review_questions(question,answer) VALUES(${question},${answer})`
+    let subject: string | null
+    try { subject = await resolveCourseSubject(b.subject) }
+    catch(e) { return NextResponse.json({error:(e as Error).message},{status:400}) }
+    await db.$executeRaw`INSERT INTO public.portal_review_questions(question,answer,subject) VALUES(${question},${answer},${subject})`
   }else if(b.action==='delete'){
     if(!/^\d{1,18}$/.test(String(b.id)))return NextResponse.json({error:'معرف غير صحيح'},{status:400})
     await db.$executeRaw`DELETE FROM public.portal_review_questions WHERE id=${BigInt(b.id)}`

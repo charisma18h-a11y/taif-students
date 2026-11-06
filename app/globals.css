@@ -291,3 +291,131 @@ body {background:#071122; color:var(--foreground); overflow-x:clip;}
 @media(max-width:800px) {.ug-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.ug-hero{flex-direction:column;align-items:stretch;}.ug-stats{align-self:stretch;}.ug-stats>div{flex:1;}}
 @media(max-width:560px) {.ug-grid{grid-template-columns:1fr;}.ug-toolbar{flex-direction:column;align-items:stretch;}.ug-search,.ug-refresh{width:100%;}.ug-refresh{justify-content:center;}.ug-hero{padding:21px;border-radius:19px;}.ug-card{min-height:0;}.ug-hero h2{font-size:29px;}.ug-modal{padding:24px;}}
 @media(prefers-reduced-motion:reduce) {.ug-card,.ug-members-toggle svg,.student-quick-nav .quick-nav-link{transition:none;}}
+
+
+/* Wosh Alina · Calm Edition — Nov 2026
+   Quiet charcoal navy / warm sand. Flat backgrounds and subtle outlines only.
+   This overrides the older Midnight Blue theme without affecting app data. */
+:root, .dark {
+  --radius: 1rem;
+  --background: #101821;
+  --foreground: #f2f0e9;
+  --card: #19232d;
+  --card-foreground: #f2f0e9;
+  --popover: #19232d;
+  --popover-foreground: #f2f0e9;
+  --primary: #d4b78a;
+  --primary-foreground: #19212a;
+  --secondary: #26313a;
+  --secondary-foreground: #e9e6dd;
+  --muted: #27323b;
+  --muted-foreground: #b3b9bb;
+  --accent: #323a40;
+  --accent-foreground: #fbf5e9;
+  --destructive: #e57e82;
+  --border: #344049;
+  --input: #485059;
+  --ring: #dfc69d;
+  --chart-1: #d4b78a;
+  --chart-2: #83ac9a;
+  --chart-3: #9a9ebc;
+  --chart-4: #ad846d;
+  --chart-5: #b7a87e;
+  --sidebar: #151f28;
+  --sidebar-foreground: #f2f0e9;
+  --sidebar-primary: #d4b78a;
+  --sidebar-primary-foreground: #19212a;
+  --sidebar-accent: #333c44;
+  --sidebar-accent-foreground: #f2f0e9;
+  --sidebar-border: #344049;
+  --sidebar-ring: #dfc69d;
+}
+html, body {background:#101821;}
+.bg-pattern {
+  background:#101821;
+  background-image:linear-gradient(180deg, #121d27 0%, #101821 36%, #101821 100%);
+  background-attachment:scroll;
+}
+.glass {
+  background:rgba(19,29,39,.97);
+  border-color:rgba(219,195,155,.12);
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+}
+.student-hero {
+  background:linear-gradient(118deg,#253341 0%, #1e2a34 65%, #1b2731 100%);
+  border:1px solid rgba(212,183,138,.22);
+  box-shadow:0 13px 35px rgba(0,0,0,.12);
+}
+.student-hero::after {
+  background:radial-gradient(circle at 0 5%,rgba(212,183,138,.10),transparent 46%);
+}
+.profile-avatar {
+  background:#d3b88c;
+  color:#1a2630;
+  box-shadow:none;
+  border:1px solid rgba(255,255,255,.2);
+}
+.profile-button {background:#303a43;color:#f2f0e9;border:1px solid #566069;}
+.profile-button:hover {background:#3c4851;}
+.profile-metric {background:#242e37;border:1px solid #39454d;}
+[data-slot="card"] {
+  background:#1b2630;
+  border-color:#36424b;
+  box-shadow:none;
+}
+[data-slot="card"]:hover {border-color:#57616a;}
+.student-quick-nav .quick-nav-link {
+  min-height:76px;
+  background:#1b2630;
+  border:1px solid #36424b;
+  border-radius:18px;
+  color:#f1eee8;
+  box-shadow:none;
+  padding:14px 10px;
+  font-size:13px;
+  font-weight:700;
+}
+.student-quick-nav .quick-nav-link svg {color:#d4b78a;}
+.student-quick-nav .quick-nav-link:hover,
+.student-quick-nav .quick-nav-link:focus-visible {background:#28343e;border-color:#d4b78a;}
+.course-menu[open] .course-menu-trigger {background:#343c44;border-color:#d4b78a;}
+.section-heading {padding:8px 2px 0;}
+/* Groups: keep meaning and interactions, quiet down electric blue accents */
+.ug-wrap {color:#f2f0e9;}
+.ug-hero {background:linear-gradient(120deg,#293743,#1b2933);border-color:#4a4d4a;box-shadow:0 12px 30px #0002;}
+.ug-hero::after {background:radial-gradient(circle at 80% 0,#d4b78a13,transparent 55%);}
+.ug-orbit {border-color:#d4b78a10;}
+.ug-eyebrow,.ug-status {color:#d4b78a;}
+.ug-eyebrow {background:#d4b78a12;border-color:#d4b78a40;}
+.ug-hero h2 span,.ug-stats strong,.ug-number,.ug-member span,.ug-board-heading,.ug-board-badge,
+.ug-leader strong,.ug-leader small,.ug-board-person small {color:#dbc49f;}
+.ug-hero-main>p,.ug-count,.ug-board-heading p,.ug-board-person p {color:#bbc1c1;}
+.ug-stats>div,.ug-leader,.ug-board-person {background:#17232d;border-color:#3d4a50;}
+.ug-toolbar {gap:12px;}
+.ug-search,.ug-refresh,.ug-card,.ug-modal,.ug-board {background:#1c2933;border-color:#3d494f;color:#f2f0e9;box-shadow:none;}
+.ug-card:hover {border-color:#b9a17e;box-shadow:0 7px 20px #0002;}
+.ug-card-active {border-color:#d4b78a;box-shadow:0 0 0 1px #d4b78a30;}
+.ug-search input,.ug-secret-label input {color:#f2f0e9;}
+.ug-join,.ug-modal-actions button {background:#d4b78a;color:#17232c;}
+.ug-join:hover {background:#e3c699;filter:none;}
+.ug-join-current {background:#243f3a;color:#bce3cb;border-color:#5e8376;}
+.ug-chip {color:#bce3cb;background:#243f3a;border-color:#476c60;}
+.ug-chip-muted {color:#bbc1c1;background:#29343e;border-color:#49565e;}
+.ug-privacy,.ug-no-members,.ug-empty {color:#b3b9bb;}
+.ug-members {background:#17212a;}
+.ug-modal-symbol,.ug-crown {color:#d4b78a;background:#d4b78a15;border-color:#d4b78a40;}
+.ug-secret-label {color:#d4b78a;}
+.ug-board {background:#202d37;}
+::selection {background:#d4b78a;color:#17232c;}
+@media(max-width:550px) {
+  .student-quick-nav .quick-nav-link {
+    display:flex;flex-direction:column;gap:8px;min-height:89px;
+    font-size:11px;line-height:1.4;padding:14px 5px;
+  }
+  .student-quick-nav .quick-nav-link svg {width:21px;height:21px;}
+  .student-hero {border-radius:23px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important;}
+}
