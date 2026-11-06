@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getStudentSession } from '@/lib/auth'
 import { physicsQuestions } from '@/lib/physics-questions'
 import {reviewState} from '@/lib/question-store'
+import { getEnrollments } from '@/lib/course-store'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,7 +20,8 @@ export async function GET() {
     const state=await reviewState()
     if(!state.enabled)return NextResponse.json({questions:[],disabled:true},{headers:{'Cache-Control':'private, no-store'}})
     const original=state.showOriginal?physicsQuestions:[]
-    const extra=state.items.map((q,i)=>({number:original.length+i+1,question:q.question,answer:q.answer}))
+    const enrolledTitles = new Set((await getEnrollments(student.id)).map(c=>c.title))
+    const extra=state.items.filter(q=>!q.subject||enrolledTitles.has(q.subject)).map((q,i)=>({number:original.length+i+1,question:q.question,answer:q.answer,subject:q.subject}))
     return NextResponse.json({questions:[...original,...extra],disabled:false},{headers:{'Cache-Control':'private, no-store'}})
   }catch(e){console.error('review student read',e);return NextResponse.json({error:'تعذر تحميل أسئلة المراجعة'},{status:503})}
   /* return NextResponse.json({ questions: physicsQuestions }, {

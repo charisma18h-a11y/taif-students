@@ -1,8 +1,12 @@
+export const maxDuration = 30
 import {NextRequest,NextResponse} from 'next/server'
 import {getStudentSession} from '@/lib/auth'
 import {staffPermissions} from '@/lib/staff-store'
 import {getCatalog,publicCatalog} from '@/lib/course-store'
 import {db} from '@/lib/db'
+import { after } from 'next/server'
+import { notifyStudents } from '@/lib/push-send'
+import { resolveCourseSubject } from '@/lib/course-subject'
 export const dynamic='force-dynamic'
 export async function GET(){
  const student=await getStudentSession()
@@ -29,11 +33,13 @@ export async function POST(req:NextRequest){
  if(title.length<3||title.length>150||description.length<3||description.length>3000)return NextResponse.json({error:'اكتب عنوانًا ووصفًا صحيحين'},{status:400})
  const subject=typeof b?.subject==='string'?b.subject.trim():''
  if(!subject)return NextResponse.json({error:'حدد مادة الواجب أو الاختبار'},{status:400})
- const catalog=await getCatalog()
- if(!catalog.some(c=>c.active&&c.title===subject))return NextResponse.json({error:'هذه المادة غير متاحة'},{status:400})
+ let resolvedSubject: string
+ try { resolvedSubject = (await resolveCourseSubject(subject, false))! }
+ catch(e) { return NextResponse.json({error:(e as Error).message},{status:400}) }
  const type=b?.type==='اختبار'?'اختبار':'واجب'
  try{
-  await db.assignment.create({data:{title,description,type,subject,published:true}})
+  await db.assignment.create({data:{title,description,type,subject:resolvedSubject,published:true}})
+  after(() => notifyStudents({title:`${type} جديد: ${title}`,body:description.slice(0,160),subject:resolvedSubject,url:'/'}))
   return NextResponse.json({success:true})
  }catch(e){console.error('staff publish',e);return NextResponse.json({error:'تعذر نشر المطلوب'},{status:503})}
 }
